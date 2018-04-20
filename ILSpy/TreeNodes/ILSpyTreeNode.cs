@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -29,14 +29,12 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// </summary>
 	public abstract class ILSpyTreeNode : SharpTreeNode
 	{
-		FilterSettings filterSettings;
-		bool childrenNeedFiltering;
+		private FilterSettings filterSettings;
+		private bool childrenNeedFiltering;
 
-		public FilterSettings FilterSettings
-		{
+		public FilterSettings FilterSettings {
 			get { return filterSettings; }
-			set
-			{
+			set {
 				if (filterSettings != value) {
 					filterSettings = value;
 					OnFilterSettingsChanged();
@@ -44,8 +42,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			}
 		}
 
-		public Language Language
-		{
+		public Language Language {
 			get { return filterSettings != null ? filterSettings.Language : Languages.AllLanguages[0]; }
 		}
 
@@ -98,7 +95,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			base.OnChildrenChanged(e);
 		}
 
-		void ApplyFilterToChild(ILSpyTreeNode child)
+		private void ApplyFilterToChild(ILSpyTreeNode child)
 		{
 			FilterResult r;
 			if (this.FilterSettings == null)
@@ -109,26 +106,30 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				case FilterResult.Hidden:
 					child.IsHidden = true;
 					break;
+
 				case FilterResult.Match:
 					child.FilterSettings = StripSearchTerm(this.FilterSettings);
 					child.IsHidden = false;
 					break;
+
 				case FilterResult.Recurse:
 					child.FilterSettings = this.FilterSettings;
 					child.EnsureChildrenFiltered();
 					child.IsHidden = child.Children.All(c => c.IsHidden);
 					break;
+
 				case FilterResult.MatchAndRecurse:
 					child.FilterSettings = StripSearchTerm(this.FilterSettings);
 					child.EnsureChildrenFiltered();
 					child.IsHidden = child.Children.All(c => c.IsHidden);
 					break;
+
 				default:
 					throw new InvalidEnumArgumentException();
 			}
 		}
 
-		static FilterSettings StripSearchTerm(FilterSettings filterSettings)
+		private static FilterSettings StripSearchTerm(FilterSettings filterSettings)
 		{
 			if (filterSettings == null)
 				return null;
@@ -165,27 +166,24 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					ApplyFilterToChild(node);
 			}
 		}
-		
+
 		public virtual bool IsPublicAPI {
 			get { return true; }
 		}
 
-		public virtual bool IsAutoLoaded
-		{
+		public virtual bool IsAutoLoaded {
 			get { return false; }
 		}
-		
+
 		public override System.Windows.Media.Brush Foreground {
 			get {
 				if (IsPublicAPI)
 					if (IsAutoLoaded) {
 						// HACK: should not be hard coded?
 						return System.Windows.Media.Brushes.SteelBlue;
-					}
-					else {
+					} else {
 						return base.Foreground;
-					}
-				else
+					} else
 					return System.Windows.SystemColors.GrayTextBrush;
 			}
 		}

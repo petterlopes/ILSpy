@@ -12,10 +12,10 @@ namespace ILSpy.BamlDecompiler
 		{
 			if (target == null)
 				throw new ArgumentNullException("target");
-			
+
 			while (predicate(target.LastOrDefault()))
 				target = target.Remove(target.Length - 1);
-			
+
 			return target;
 		}
 	}

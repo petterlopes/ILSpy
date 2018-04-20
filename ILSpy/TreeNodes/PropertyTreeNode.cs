@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -28,7 +28,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// </summary>
 	public sealed class PropertyTreeNode : ILSpyTreeNode, IMemberTreeNode
 	{
-		readonly bool isIndexer;
+		private readonly bool isIndexer;
 
 		public PropertyTreeNode(PropertyDefinition property)
 		{
@@ -58,26 +58,21 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			string name = language.FormatPropertyName(property, isIndexer);
 
 			var b = new System.Text.StringBuilder();
-			if (property.HasParameters)
-			{
+			if (property.HasParameters) {
 				b.Append('(');
-				for (int i = 0; i < property.Parameters.Count; i++)
-				{
+				for (int i = 0; i < property.Parameters.Count; i++) {
 					if (i > 0)
 						b.Append(", ");
 					b.Append(language.TypeToString(property.Parameters[i].ParameterType, false, property.Parameters[i]));
 				}
 				var method = property.GetMethod ?? property.SetMethod;
-				if (method.CallingConvention == MethodCallingConvention.VarArg)
-				{
+				if (method.CallingConvention == MethodCallingConvention.VarArg) {
 					if (property.HasParameters)
 						b.Append(", ");
 					b.Append("...");
 				}
 				b.Append(") : ");
-			}
-			else
-			{
+			} else {
 				b.Append(" : ");
 			}
 			b.Append(language.TypeToString(property.PropertyType, false, property));
@@ -100,18 +95,25 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			switch (methodAttributes & MethodAttributes.MemberAccessMask) {
 				case MethodAttributes.Public:
 					return AccessOverlayIcon.Public;
+
 				case MethodAttributes.Assembly:
 					return AccessOverlayIcon.Internal;
+
 				case MethodAttributes.FamANDAssem:
 					return AccessOverlayIcon.PrivateProtected;
+
 				case MethodAttributes.Family:
 					return AccessOverlayIcon.Protected;
+
 				case MethodAttributes.FamORAssem:
 					return AccessOverlayIcon.ProtectedInternal;
+
 				case MethodAttributes.Private:
 					return AccessOverlayIcon.Private;
+
 				case MethodAttributes.CompilerControlled:
 					return AccessOverlayIcon.CompilerControlled;
+
 				default:
 					throw new NotSupportedException();
 			}
@@ -171,7 +173,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		{
 			language.DecompileProperty(PropertyDefinition, output, options);
 		}
-		
+
 		public override bool IsPublicAPI {
 			get {
 				switch (GetAttributesOfMostAccessibleMethod(PropertyDefinition) & MethodAttributes.MemberAccessMask) {
@@ -179,6 +181,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					case MethodAttributes.Family:
 					case MethodAttributes.FamORAssem:
 						return true;
+
 					default:
 						return false;
 				}

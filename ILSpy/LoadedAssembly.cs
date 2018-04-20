@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -19,10 +19,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using ICSharpCode.Decompiler;
 using ICSharpCode.ILSpy.Options;
 using Mono.Cecil;
@@ -34,10 +32,10 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	public sealed class LoadedAssembly
 	{
-		readonly Task<ModuleDefinition> assemblyTask;
-		readonly AssemblyList assemblyList;
-		readonly string fileName;
-		readonly string shortName;
+		private readonly Task<ModuleDefinition> assemblyTask;
+		private readonly AssemblyList assemblyList;
+		private readonly string fileName;
+		private readonly string shortName;
 
 		public LoadedAssembly(AssemblyList assemblyList, string fileName, Stream stream = null)
 		{
@@ -47,7 +45,7 @@ namespace ICSharpCode.ILSpy
 				throw new ArgumentNullException(nameof(fileName));
 			this.assemblyList = assemblyList;
 			this.fileName = fileName;
-			
+
 			this.assemblyTask = Task.Factory.StartNew<ModuleDefinition>(LoadAssembly, stream); // requires that this.fileName is set
 			this.shortName = Path.GetFileNameWithoutExtension(fileName);
 		}
@@ -134,7 +132,7 @@ namespace ICSharpCode.ILSpy
 
 		public bool IsAutoLoaded { get; set; }
 
-		ModuleDefinition LoadAssembly(object state)
+		private ModuleDefinition LoadAssembly(object state)
 		{
 			var stream = state as Stream;
 			ModuleDefinition module;
@@ -144,13 +142,10 @@ namespace ICSharpCode.ILSpy
 			p.AssemblyResolver = new MyAssemblyResolver(this);
 			p.InMemory = true;
 
-			if (stream != null)
-			{
+			if (stream != null) {
 				// Read the module from a precrafted stream
 				module = ModuleDefinition.ReadModule(stream, p);
-			}
-			else
-			{
+			} else {
 				// Read the module from disk (by default)
 				module = ModuleDefinition.ReadModule(fileName, p);
 			}
@@ -166,7 +161,7 @@ namespace ICSharpCode.ILSpy
 			}
 			return module;
 		}
-		
+
 		private void LoadSymbols(ModuleDefinition module)
 		{
 			if (!module.HasDebugHeader) {
@@ -181,23 +176,23 @@ namespace ICSharpCode.ILSpy
 				}
 				return;
 			}
-			
+
 			// TODO: use symbol cache, get symbols from microsoft
 		}
-		
+
 		[ThreadStatic]
-		static int assemblyLoadDisableCount;
-		
+		private static int assemblyLoadDisableCount;
+
 		public static IDisposable DisableAssemblyLoad()
 		{
 			assemblyLoadDisableCount++;
 			return new DecrementAssemblyLoadDisableCount();
 		}
-		
-		sealed class DecrementAssemblyLoadDisableCount : IDisposable
+
+		private sealed class DecrementAssemblyLoadDisableCount : IDisposable
 		{
-			bool disposed;
-			
+			private bool disposed;
+
 			public void Dispose()
 			{
 				if (!disposed) {
@@ -208,21 +203,21 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 		}
-		
-		sealed class MyAssemblyResolver : IAssemblyResolver
+
+		private sealed class MyAssemblyResolver : IAssemblyResolver
 		{
-			readonly LoadedAssembly parent;
-			
+			private readonly LoadedAssembly parent;
+
 			public MyAssemblyResolver(LoadedAssembly parent)
 			{
 				this.parent = parent;
 			}
-			
+
 			public AssemblyDefinition Resolve(AssemblyNameReference name)
 			{
 				return parent.LookupReferencedAssembly(name)?.GetAssemblyDefinitionOrNull();
 			}
-			
+
 			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters)
 			{
 				return parent.LookupReferencedAssembly(name)?.GetAssemblyDefinitionOrNull();
@@ -232,12 +227,12 @@ namespace ICSharpCode.ILSpy
 			{
 			}
 		}
-		
+
 		public IAssemblyResolver GetAssemblyResolver()
 		{
 			return new MyAssemblyResolver(this);
 		}
-		
+
 		public LoadedAssembly LookupReferencedAssembly(AssemblyNameReference name)
 		{
 			if (name == null)
@@ -249,7 +244,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		class MyUniversalResolver : UniversalAssemblyResolver
+		private class MyUniversalResolver : UniversalAssemblyResolver
 		{
 			public MyUniversalResolver(LoadedAssembly assembly)
 				: base(assembly.FileName, false)
@@ -257,9 +252,9 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		static Dictionary<string, LoadedAssembly> loadingAssemblies = new Dictionary<string, LoadedAssembly>();
+		private static Dictionary<string, LoadedAssembly> loadingAssemblies = new Dictionary<string, LoadedAssembly>();
 
-		LoadedAssembly LookupReferencedAssemblyInternal(AssemblyNameReference fullName, bool isWinRT)
+		private LoadedAssembly LookupReferencedAssemblyInternal(AssemblyNameReference fullName, bool isWinRT)
 		{
 			string GetName(AssemblyNameReference name) => isWinRT ? name.Name : name.FullName;
 
@@ -302,7 +297,7 @@ namespace ICSharpCode.ILSpy
 				}
 				loadingAssemblies.Add(file, asm);
 			}
-			App.Current.Dispatcher.BeginInvoke((Action)delegate() {
+			App.Current.Dispatcher.BeginInvoke((Action)delegate () {
 				lock (assemblyList.assemblies) {
 					assemblyList.assemblies.Add(asm);
 				}
@@ -312,12 +307,12 @@ namespace ICSharpCode.ILSpy
 			});
 			return asm;
 		}
-		
+
 		public Task ContinueWhenLoaded(Action<Task<ModuleDefinition>> onAssemblyLoaded, TaskScheduler taskScheduler)
 		{
 			return this.assemblyTask.ContinueWith(onAssemblyLoaded, default(CancellationToken), TaskContinuationOptions.RunContinuationsAsynchronously, taskScheduler);
 		}
-		
+
 		/// <summary>
 		/// Wait until the assembly is loaded.
 		/// Throws an AggregateException when loading the assembly fails.
@@ -326,6 +321,5 @@ namespace ICSharpCode.ILSpy
 		{
 			assemblyTask.Wait();
 		}
-
 	}
 }

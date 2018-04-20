@@ -7,40 +7,39 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 {
 	public class KeyMapping
 	{
-		List<object> staticResources;
-		
+		private List<object> staticResources;
+
 		public List<object> StaticResources {
 			get { return staticResources; }
 		}
-		
+
 		public bool HasStaticResource(int identifier)
 		{
 			return staticResources != null && staticResources.Count > identifier;
 		}
-		
+
 		public string KeyString { get; set; }
 		public bool Shared { get; set; }
 		public bool SharedSet { get; set; }
-		
+
 		public int Position { get; set; }
-		
+
 		public KeyMapping()
 		{
 			this.staticResources = new List<object>();
 			this.Position = -1;
 		}
-		
+
 		public KeyMapping(string key)
 		{
 			this.KeyString = key;
 			this.staticResources = new List<object>();
 			this.Position = -1;
 		}
-		
+
 		public override string ToString()
 		{
 			return '"' + KeyString + '"';
 		}
-
 	}
 }

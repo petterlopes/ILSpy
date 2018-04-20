@@ -2,9 +2,7 @@
 
 using System.Windows;
 
-#endregion
-
-
+#endregion Using directives
 
 //In order to begin building localizable applications, set
 //<UICulture>CultureYouAreCodingWith</UICulture> in your .csproj file
@@ -14,7 +12,6 @@ using System.Windows;
 //the line below to match the UICulture setting in the project file.
 
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
-
 
 [assembly: ThemeInfo(
 	ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -17,22 +17,22 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using System.Windows;
 using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace ICSharpCode.ILSpy
 {
-	static class Images
+	internal static class Images
 	{
-		static BitmapImage LoadBitmap(string name)
+		private static BitmapImage LoadBitmap(string name)
 		{
 			BitmapImage image = new BitmapImage(new Uri("pack://application:,,,/Images/" + name + ".png"));
 			image.Freeze();
 			return image;
 		}
-		
+
 		public static readonly BitmapImage Breakpoint = LoadBitmap("Breakpoint");
 		public static readonly BitmapImage CurrentLine = LoadBitmap("CurrentLine");
 
@@ -72,7 +72,6 @@ namespace ICSharpCode.ILSpy
 		public static readonly BitmapImage Delegate = LoadBitmap("Delegate");
 		public static readonly BitmapImage Enum = LoadBitmap("Enum");
 		public static readonly BitmapImage StaticClass = LoadBitmap("StaticClass");
-
 
 		public static readonly BitmapImage Field = LoadBitmap("Field");
 		public static readonly BitmapImage FieldReadOnly = LoadBitmap("FieldReadOnly");
@@ -115,7 +114,6 @@ namespace ICSharpCode.ILSpy
 			return image;
 		}
 
-
 		private static readonly TypeIconCache typeIconCache = new TypeIconCache();
 		private static readonly MemberIconCache memberIconCache = new MemberIconCache();
 
@@ -152,21 +150,27 @@ namespace ICSharpCode.ILSpy
 					case TypeIcon.Class:
 						baseImage = Images.Class;
 						break;
+
 					case TypeIcon.Enum:
 						baseImage = Images.Enum;
 						break;
+
 					case TypeIcon.Struct:
 						baseImage = Images.Struct;
 						break;
+
 					case TypeIcon.Interface:
 						baseImage = Images.Interface;
 						break;
+
 					case TypeIcon.Delegate:
 						baseImage = Images.Delegate;
 						break;
+
 					case TypeIcon.StaticClass:
 						baseImage = Images.StaticClass;
 						break;
+
 					default:
 						throw new NotSupportedException();
 				}
@@ -201,42 +205,55 @@ namespace ICSharpCode.ILSpy
 					case MemberIcon.Field:
 						baseImage = Images.Field;
 						break;
+
 					case MemberIcon.FieldReadOnly:
 						baseImage = Images.FieldReadOnly;
 						break;
+
 					case MemberIcon.Literal:
 						baseImage = Images.Literal;
 						break;
+
 					case MemberIcon.EnumValue:
 						baseImage = Images.Literal;
 						break;
+
 					case MemberIcon.Property:
 						baseImage = Images.Property;
 						break;
+
 					case MemberIcon.Indexer:
 						baseImage = Images.Indexer;
 						break;
+
 					case MemberIcon.Method:
 						baseImage = Images.Method;
 						break;
+
 					case MemberIcon.Constructor:
 						baseImage = Images.Constructor;
 						break;
+
 					case MemberIcon.VirtualMethod:
 						baseImage = Images.VirtualMethod;
 						break;
+
 					case MemberIcon.Operator:
 						baseImage = Images.Operator;
 						break;
+
 					case MemberIcon.ExtensionMethod:
 						baseImage = Images.ExtensionMethod;
 						break;
+
 					case MemberIcon.PInvokeMethod:
 						baseImage = Images.PInvokeMethod;
 						break;
+
 					case MemberIcon.Event:
 						baseImage = Images.Event;
 						break;
+
 					default:
 						throw new NotSupportedException();
 				}
@@ -284,24 +301,31 @@ namespace ICSharpCode.ILSpy
 					case AccessOverlayIcon.Public:
 						overlayImage = null;
 						break;
+
 					case AccessOverlayIcon.Protected:
 						overlayImage = Images.OverlayProtected;
 						break;
+
 					case AccessOverlayIcon.Internal:
 						overlayImage = Images.OverlayInternal;
 						break;
+
 					case AccessOverlayIcon.ProtectedInternal:
 						overlayImage = Images.OverlayProtectedInternal;
 						break;
+
 					case AccessOverlayIcon.Private:
 						overlayImage = Images.OverlayPrivate;
 						break;
+
 					case AccessOverlayIcon.PrivateProtected:
 						overlayImage = Images.OverlayPrivateProtected;
 						break;
+
 					case AccessOverlayIcon.CompilerControlled:
 						overlayImage = Images.OverlayCompilerControlled;
 						break;
+
 					default:
 						throw new NotSupportedException();
 				}
@@ -330,6 +354,6 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		#endregion
+		#endregion icon caches & overlay management
 	}
 }

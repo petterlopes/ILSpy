@@ -10,9 +10,9 @@ namespace ILSpy.BamlDecompiler
 {
 	public class CecilDependencyPropertyDescriptor : IDependencyPropertyDescriptor
 	{
-		string member;
-		TypeDefinition type;
-		
+		private string member;
+		private TypeDefinition type;
+
 		public CecilDependencyPropertyDescriptor(string member, TypeDefinition type)
 		{
 			if (type == null)
@@ -20,13 +20,13 @@ namespace ILSpy.BamlDecompiler
 			this.member = member;
 			this.type = type;
 		}
-		
+
 		public bool IsAttached {
 			get {
-				return type.Methods.Any(m  => m.Name == "Get" + member);
+				return type.Methods.Any(m => m.Name == "Get" + member);
 			}
 		}
-		
+
 		public override string ToString()
 		{
 			return string.Format("[CecilDependencyPropertyDescriptor Member={0}, Type={1}]", member, type);

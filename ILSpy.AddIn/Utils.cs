@@ -5,17 +5,18 @@ using System.Text;
 
 namespace ICSharpCode.ILSpy.AddIn
 {
-	static class Utils
+	internal static class Utils
 	{
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
 		[DllImport("shell32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-		static extern unsafe char** CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)] string lpCmdLine, out int pNumArgs);
+		private static extern unsafe char** CommandLineToArgvW([MarshalAs(UnmanagedType.LPWStr)] string lpCmdLine, out int pNumArgs);
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
 		[DllImport("kernel32.dll")]
-		static extern IntPtr LocalFree(IntPtr hMem);
+		private static extern IntPtr LocalFree(IntPtr hMem);
 
 		#region CommandLine <-> Argument Array
+
 		/// <summary>
 		/// Decodes a command line into an array of arguments according to the CommandLineToArgvW rules.
 		/// </summary>
@@ -45,7 +46,7 @@ namespace ICSharpCode.ILSpy.AddIn
 			}
 		}
 
-		static readonly char[] charsNeedingQuoting = { ' ', '\t', '\n', '\v', '"' };
+		private static readonly char[] charsNeedingQuoting = { ' ', '\t', '\n', '\v', '"' };
 
 		/// <summary>
 		/// Escapes a set of arguments according to the CommandLineToArgvW rules.
@@ -69,7 +70,7 @@ namespace ICSharpCode.ILSpy.AddIn
 			return b.ToString();
 		}
 
-		static void AppendArgument(StringBuilder b, string arg)
+		private static void AppendArgument(StringBuilder b, string arg)
 		{
 			if (arg == null) {
 				return;
@@ -99,7 +100,8 @@ namespace ICSharpCode.ILSpy.AddIn
 				b.Append('"');
 			}
 		}
-		#endregion
+
+		#endregion CommandLine <-> Argument Array
 
 		public static byte[] HexStringToBytes(string hex)
 		{

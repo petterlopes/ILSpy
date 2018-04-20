@@ -5,7 +5,7 @@
 		d:DesignHeight="300" d:DesignWidth="300">
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"  />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		<Border BorderThickness="0,0,0,1" BorderBrush="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}" Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">

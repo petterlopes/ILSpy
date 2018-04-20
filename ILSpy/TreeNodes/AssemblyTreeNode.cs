@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -38,8 +38,8 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// </summary>
 	public sealed class AssemblyTreeNode : ILSpyTreeNode
 	{
-		readonly LoadedAssembly assembly;
-		readonly Dictionary<string, NamespaceTreeNode> namespaces = new Dictionary<string, NamespaceTreeNode>();
+		private readonly LoadedAssembly assembly;
+		private readonly Dictionary<string, NamespaceTreeNode> namespaces = new Dictionary<string, NamespaceTreeNode>();
 
 		public AssemblyTreeNode(LoadedAssembly assembly)
 		{
@@ -53,32 +53,26 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.LazyLoading = true;
 		}
 
-		public AssemblyList AssemblyList
-		{
+		public AssemblyList AssemblyList {
 			get { return assembly.AssemblyList; }
 		}
 
-		public LoadedAssembly LoadedAssembly
-		{
+		public LoadedAssembly LoadedAssembly {
 			get { return assembly; }
 		}
 
-		public override bool IsAutoLoaded
-		{
-			get { 
-				return assembly.IsAutoLoaded; 
+		public override bool IsAutoLoaded {
+			get {
+				return assembly.IsAutoLoaded;
 			}
 		}
 
-		public override object Text
-		{
+		public override object Text {
 			get { return HighlightSearchMatch(assembly.Text); }
 		}
 
-		public override object Icon
-		{
-			get
-			{
+		public override object Icon {
+			get {
 				if (assembly.IsLoaded) {
 					return assembly.HasLoadError ? Images.AssemblyWarning : Images.Assembly;
 				} else {
@@ -87,10 +81,9 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			}
 		}
 
-		TextBlock tooltip;
+		private TextBlock tooltip;
 
-		public override object ToolTip
-		{
+		public override object ToolTip {
 			get {
 				if (assembly.HasLoadError)
 					return "Assembly could not be loaded. Click here for details.";
@@ -120,12 +113,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			}
 		}
 
-		public override bool ShowExpander
-		{
+		public override bool ShowExpander {
 			get { return !assembly.HasLoadError; }
 		}
 
-		void OnAssemblyLoaded(Task<ModuleDefinition> moduleTask)
+		private void OnAssemblyLoaded(Task<ModuleDefinition> moduleTask)
 		{
 			// change from "Loading" icon to final icon
 			RaisePropertyChanged("Icon");
@@ -133,15 +125,14 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			RaisePropertyChanged("Tooltip");
 			if (moduleTask.IsFaulted) {
 				RaisePropertyChanged("ShowExpander"); // cannot expand assemblies with load error
-				// observe the exception so that the Task's finalizer doesn't re-throw it
-				try { moduleTask.Wait(); }
-				catch (AggregateException) { }
+													  // observe the exception so that the Task's finalizer doesn't re-throw it
+				try { moduleTask.Wait(); } catch (AggregateException) { }
 			} else {
 				RaisePropertyChanged("Text"); // shortname might have changed
 			}
 		}
 
-		readonly Dictionary<TypeDefinition, TypeTreeNode> typeDict = new Dictionary<TypeDefinition, TypeTreeNode>();
+		private readonly Dictionary<TypeDefinition, TypeTreeNode> typeDict = new Dictionary<TypeDefinition, TypeTreeNode>();
 
 		protected override void LoadChildren()
 		{
@@ -172,7 +163,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					this.Children.Add(ns);
 			}
 		}
-		
+
 		public override bool CanExpandRecursively {
 			get { return true; }
 		}
@@ -206,7 +197,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			else
 				return null;
 		}
-		
+
 		public override bool CanDrag(SharpTreeNode[] nodes)
 		{
 			return nodes.All(n => n is AssemblyTreeNode);
@@ -269,12 +260,15 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					case BadImageFormatException badImage:
 						HandleException(badImage, "This file does not contain a managed assembly.");
 						return;
+
 					case FileNotFoundException fileNotFound:
 						HandleException(fileNotFound, "The file was not found.");
 						return;
+
 					case DirectoryNotFoundException dirNotFound:
 						HandleException(dirNotFound, "The directory was not found.");
 						return;
+
 					default:
 						throw;
 				}
@@ -322,7 +316,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	}
 
 	[ExportContextMenuEntry(Header = "_Remove", Icon = "images/Delete.png")]
-	sealed class RemoveAssembly : IContextMenuEntry
+	internal sealed class RemoveAssembly : IContextMenuEntry
 	{
 		public bool IsVisible(TextViewContext context)
 		{
@@ -347,7 +341,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	}
 
 	[ExportContextMenuEntry(Header = "_Reload", Icon = "images/Refresh.png")]
-	sealed class ReloadAssembly : IContextMenuEntry
+	internal sealed class ReloadAssembly : IContextMenuEntry
 	{
 		public bool IsVisible(TextViewContext context)
 		{
@@ -379,7 +373,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	}
 
 	[ExportContextMenuEntry(Header = "_Load Dependencies", Category = "Dependencies")]
-	sealed class LoadDependencies : IContextMenuEntry
+	internal sealed class LoadDependencies : IContextMenuEntry
 	{
 		public bool IsVisible(TextViewContext context)
 		{
@@ -411,13 +405,13 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	}
 
 	[ExportContextMenuEntry(Header = "_Add To Main List", Category = "Dependencies")]
-	sealed class AddToMainList : IContextMenuEntry
+	internal sealed class AddToMainList : IContextMenuEntry
 	{
 		public bool IsVisible(TextViewContext context)
 		{
 			if (context.SelectedTreeNodes == null)
 				return false;
-			return context.SelectedTreeNodes.Where(n => n is AssemblyTreeNode).Any(n=>((AssemblyTreeNode)n).IsAutoLoaded);
+			return context.SelectedTreeNodes.Where(n => n is AssemblyTreeNode).Any(n => ((AssemblyTreeNode)n).IsAutoLoaded);
 		}
 
 		public bool IsEnabled(TextViewContext context)

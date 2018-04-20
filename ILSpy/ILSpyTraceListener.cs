@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -19,13 +19,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using ICSharpCode.ILSpy.Controls;
-using System.Linq;
 
 namespace ICSharpCode.ILSpy
 {
-	class ILSpyTraceListener : DefaultTraceListener
+	internal class ILSpyTraceListener : DefaultTraceListener
 	{
 		[Conditional("DEBUG")]
 		public static void Install()
@@ -39,8 +39,8 @@ namespace ICSharpCode.ILSpy
 			base.AssertUiEnabled = false;
 		}
 
-		HashSet<string> ignoredStacks = new HashSet<string>();
-		bool dialogIsOpen;
+		private HashSet<string> ignoredStacks = new HashSet<string>();
+		private bool dialogIsOpen;
 
 		public override void Fail(string message)
 		{
@@ -89,7 +89,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		int ShowAssertionDialog(string message, string detailMessage, string stackTrace)
+		private int ShowAssertionDialog(string message, string detailMessage, string stackTrace)
 		{
 			message = message + Environment.NewLine + detailMessage + Environment.NewLine + stackTrace;
 			string[] buttonTexts = { "Throw", "Debug", "Ignore", "Ignore All" };
@@ -106,8 +106,10 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	class AssertionFailedException : Exception
+	internal class AssertionFailedException : Exception
 	{
-		public AssertionFailedException(string message) : base(message) { }
+		public AssertionFailedException(string message) : base(message)
+		{
+		}
 	}
 }

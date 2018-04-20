@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -24,17 +24,16 @@ namespace ICSharpCode.ILSpy.Controls
 {
 	public sealed class CustomDialog : System.Windows.Forms.Form
 	{
-		System.Windows.Forms.Label label;
-		System.Windows.Forms.Panel panel;
-		int acceptButton;
-		int cancelButton;
-		int result = -1;
+		private System.Windows.Forms.Label label;
+		private System.Windows.Forms.Panel panel;
+		private int acceptButton;
+		private int cancelButton;
+		private int result = -1;
 
 		/// <summary>
 		/// Gets the index of the button pressed.
 		/// </summary>
-		public int Result
-		{
+		public int Result {
 			get {
 				return result;
 			}
@@ -92,7 +91,7 @@ namespace ICSharpCode.ILSpy.Controls
 				panel.Controls.AddRange(buttons);
 			}
 			label.Text = message;
-			
+
 			this.ResumeLayout(false);
 		}
 
@@ -103,7 +102,7 @@ namespace ICSharpCode.ILSpy.Controls
 			}
 		}
 
-		void ButtonClick(object sender, EventArgs e)
+		private void ButtonClick(object sender, EventArgs e)
 		{
 			result = (int)((Control)sender).Tag;
 			this.Close();
@@ -114,21 +113,21 @@ namespace ICSharpCode.ILSpy.Controls
 		/// Do not change the method contents inside the source code editor. The Forms designer might
 		/// not be able to load this method if it was changed manually.
 		/// </summary>
-		void MyInitializeComponent()
+		private void MyInitializeComponent()
 		{
 			this.panel = new System.Windows.Forms.Panel();
 			this.label = new System.Windows.Forms.Label();
-			// 
+			//
 			// panel
-			// 
+			//
 			this.panel.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.panel.Location = new System.Drawing.Point(4, 80);
 			this.panel.Name = "panel";
 			this.panel.Size = new System.Drawing.Size(266, 32);
 			this.panel.TabIndex = 0;
-			// 
+			//
 			// label
-			// 
+			//
 			this.label.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.label.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.label.Location = new System.Drawing.Point(4, 4);
@@ -136,9 +135,9 @@ namespace ICSharpCode.ILSpy.Controls
 			this.label.Size = new System.Drawing.Size(266, 76);
 			this.label.TabIndex = 1;
 			this.label.UseMnemonic = false;
-			// 
+			//
 			// CustomDialog
-			// 
+			//
 			this.ClientSize = new System.Drawing.Size(274, 112);
 			this.Controls.Add(this.label);
 			this.Controls.Add(this.panel);

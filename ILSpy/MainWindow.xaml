@@ -80,11 +80,11 @@
 			<Separator />
 			<ComboBox Name="languageComboBox" DisplayMemberPath="Name" Width="100" MaxDropDownHeight="Auto"
 			          ItemsSource="{x:Static local:Languages.AllLanguages}"
-			          SelectedItem="{Binding FilterSettings.Language}"/>
+			          SelectedItem="{Binding FilterSettings.Language}" />
 			<ComboBox Name="languageVersionComboBox" DisplayMemberPath="DisplayName" Width="100" MaxDropDownHeight="Auto"
 			          Visibility="{Binding SelectedItem.HasLanguageVersions, ElementName=languageComboBox, Converter={StaticResource BooleanToVisibilityConverter}}"
 			          ItemsSource="{Binding SelectedItem.LanguageVersions, ElementName=languageComboBox, UpdateSourceTrigger=PropertyChanged}"
-			          SelectedItem="{Binding FilterSettings.LanguageVersion, UpdateSourceTrigger=PropertyChanged}"/>
+			          SelectedItem="{Binding FilterSettings.LanguageVersion, UpdateSourceTrigger=PropertyChanged}" />
 		</ToolBar>
 		<!-- Status bar -->
 		<StatusBar x:Name="statusBar" DockPanel.Dock="Bottom" Height="26" Visibility="Collapsed">
@@ -93,7 +93,7 @@
 				           HorizontalAlignment="Right"
 				           x:Name="StatusLabel"
 				           ToolTip="Status"
-				           Text="Stand by..."/>
+				           Text="Stand by..." />
 			</StatusBarItem>
 		</StatusBar>
 		<!-- Main grid separating left pane (treeView) from main pane (textEditor) -->
@@ -155,12 +155,12 @@
 						</StackPanel>
 					</DockPanel>
 				</Border>
-				
+
 				<controls:DockedPane x:Name="topPane" Grid.Row="1" Title="Top" Visibility="Collapsed"
 									 AutomationProperties.Name="Close top pane"
 					CloseButtonClicked="TopPane_CloseButtonClicked" Margin="0,0,0,3"
 					BorderThickness="1,1,0,1" />
-				
+
 				<GridSplitter
 					Grid.ZIndex="1"
 					Grid.Row="2"
@@ -171,10 +171,10 @@
 					VerticalAlignment="Center"
 					Focusable="False"
 					Visibility="{Binding Visibility, ElementName=topPane}" />
-				
+
 				<!-- decompilerTextView is into the mainPane by code -->
-				<ContentPresenter Name="mainPane" Grid.Row="3"/>
-				
+				<ContentPresenter Name="mainPane" Grid.Row="3" />
+
 				<GridSplitter
 					Grid.ZIndex="1"
 					Grid.Row="4"
@@ -185,10 +185,10 @@
 					VerticalAlignment="Center"
 					Focusable="False"
 					Visibility="{Binding Visibility, ElementName=bottomPane}" />
-				
+
 				<controls:DockedPane x:Name="bottomPane" Grid.Row="5" Title="Bottom" Visibility="Collapsed"
 									 AutomationProperties.Name="Close"
-					CloseButtonClicked="BottomPane_CloseButtonClicked" Margin="0,3,0,0" BorderThickness="1,1,0,1"/>
+					CloseButtonClicked="BottomPane_CloseButtonClicked" Margin="0,3,0,0" BorderThickness="1,1,0,1" />
 			</Grid>
 		</Grid>
 	</DockPanel>

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.Shell;
 using Mono.Cecil;
 
 namespace ICSharpCode.ILSpy.AddIn.Commands
 {
-	abstract class ILSpyCommand
+	internal abstract class ILSpyCommand
 	{
 		protected ILSpyAddInPackage owner;
 
@@ -91,9 +88,9 @@ namespace ICSharpCode.ILSpy.AddIn.Commands
 		}
 	}
 
-	class OpenILSpyCommand : ILSpyCommand
+	internal class OpenILSpyCommand : ILSpyCommand
 	{
-		static OpenILSpyCommand instance;
+		private static OpenILSpyCommand instance;
 
 		public OpenILSpyCommand(ILSpyAddInPackage owner)
 			: base(owner, PkgCmdIDList.cmdidOpenILSpy)

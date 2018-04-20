@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -18,9 +18,8 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using Mono.Cecil;
 using System.Windows.Input;
-using System;
+using Mono.Cecil;
 
 namespace ICSharpCode.ILSpy
 {
@@ -29,12 +28,11 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	public partial class OpenListDialog : Window
 	{
-
 		public const string DotNet4List = ".NET 4 (WPF)";
 		public const string DotNet35List = ".NET 3.5";
 		public const string ASPDotNetMVC3List = "ASP.NET (MVC3)";
 
-		readonly AssemblyListManager manager;
+		private readonly AssemblyListManager manager;
 
 		public OpenListDialog()
 		{
@@ -48,29 +46,26 @@ namespace ICSharpCode.ILSpy
 			CreateDefaultAssemblyLists();
 		}
 
-		void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			okButton.IsEnabled = listView.SelectedItem != null;
 			deleteButton.IsEnabled = listView.SelectedItem != null;
 		}
 
-		void OKButton_Click(object sender, RoutedEventArgs e)
+		private void OKButton_Click(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = true;
 		}
 
-		public string SelectedListName
-		{
-			get
-			{
+		public string SelectedListName {
+			get {
 				return listView.SelectedItem.ToString();
 			}
 		}
 
 		private void CreateDefaultAssemblyLists()
 		{
-			if (!manager.AssemblyLists.Contains(DotNet4List))
-			{
+			if (!manager.AssemblyLists.Contains(DotNet4List)) {
 				AssemblyList dotnet4 = new AssemblyList(DotNet4List);
 				AddToList(dotnet4, "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 				AddToList(dotnet4, "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
@@ -85,14 +80,12 @@ namespace ICSharpCode.ILSpy
 				AddToList(dotnet4, "PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 				AddToList(dotnet4, "WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 
-				if (dotnet4.assemblies.Count > 0)
-				{
+				if (dotnet4.assemblies.Count > 0) {
 					manager.CreateList(dotnet4);
 				}
 			}
 
-			if (!manager.AssemblyLists.Contains(DotNet35List))
-			{
+			if (!manager.AssemblyLists.Contains(DotNet35List)) {
 				AssemblyList dotnet35 = new AssemblyList(DotNet35List);
 				AddToList(dotnet35, "mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 				AddToList(dotnet35, "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
@@ -105,14 +98,12 @@ namespace ICSharpCode.ILSpy
 				AddToList(dotnet35, "PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 				AddToList(dotnet35, "WindowsBase, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 
-				if (dotnet35.assemblies.Count > 0)
-				{
+				if (dotnet35.assemblies.Count > 0) {
 					manager.CreateList(dotnet35);
 				}
 			}
 
-			if (!manager.AssemblyLists.Contains(ASPDotNetMVC3List))
-			{
+			if (!manager.AssemblyLists.Contains(ASPDotNetMVC3List)) {
 				AssemblyList mvc = new AssemblyList(ASPDotNetMVC3List);
 				AddToList(mvc, "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 				AddToList(mvc, "System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
@@ -139,8 +130,7 @@ namespace ICSharpCode.ILSpy
 				AddToList(mvc, "System.Xml.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089");
 				AddToList(mvc, "Microsoft.CSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
 
-				if (mvc.assemblies.Count > 0)
-				{
+				if (mvc.assemblies.Count > 0) {
 					manager.CreateList(mvc);
 				}
 			}
@@ -158,19 +148,15 @@ namespace ICSharpCode.ILSpy
 		{
 			CreateListDialog dlg = new CreateListDialog();
 			dlg.Owner = this;
-			dlg.Closing += (s, args) =>
-			{
-				if (dlg.DialogResult == true)
-				{
-					if (manager.AssemblyLists.Contains(dlg.NewListName))
-					{
+			dlg.Closing += (s, args) => {
+				if (dlg.DialogResult == true) {
+					if (manager.AssemblyLists.Contains(dlg.NewListName)) {
 						args.Cancel = true;
 						MessageBox.Show("A list with the same name was found.", null, MessageBoxButton.OK);
 					}
 				}
 			};
-			if (dlg.ShowDialog() == true)
-			{
+			if (dlg.ShowDialog() == true) {
 				manager.CreateList(new AssemblyList(dlg.NewListName));
 			}
 		}
@@ -199,6 +185,5 @@ namespace ICSharpCode.ILSpy
 			if (e.ChangedButton == MouseButton.Left && listView.SelectedItem != null)
 				this.DialogResult = true;
 		}
-
 	}
 }

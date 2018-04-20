@@ -3,10 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using ICSharpCode.Decompiler;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.IL;
 using ICSharpCode.Decompiler.IL.Transforms;
@@ -19,43 +17,43 @@ namespace ILSpy.BamlDecompiler
 	/// <summary>
 	/// Represents an event registration of a XAML code-behind class.
 	/// </summary>
-	sealed class EventRegistration
+	internal sealed class EventRegistration
 	{
 		public string EventName, MethodName;
 	}
-	
+
 	/// <summary>
 	/// Decompiles event and name mappings of XAML code-behind classes.
 	/// </summary>
-	sealed class ConnectMethodDecompiler
+	internal sealed class ConnectMethodDecompiler
 	{
-		AssemblyDefinition assembly;
-		
+		private AssemblyDefinition assembly;
+
 		public ConnectMethodDecompiler(AssemblyDefinition assembly)
 		{
 			this.assembly = assembly;
 		}
-		
+
 		public List<(LongSet, EventRegistration[])> DecompileEventMappings(string fullTypeName, CancellationToken cancellationToken)
 		{
 			var result = new List<(LongSet, EventRegistration[])>();
 			TypeDefinition type = this.assembly.MainModule.GetType(fullTypeName);
-			
+
 			if (type == null)
 				return result;
-			
+
 			MethodDefinition method = null;
-			
+
 			foreach (var m in type.Methods) {
 				if (m.Name == "System.Windows.Markup.IComponentConnector.Connect") {
 					method = m;
 					break;
 				}
 			}
-			
+
 			if (method == null)
 				return result;
-			
+
 			// decompile method and optimize the switch
 			var typeSystem = new DecompilerTypeSystem(method.Module);
 			var ilReader = new ILReader(typeSystem);
@@ -65,10 +63,10 @@ namespace ILSpy.BamlDecompiler
 				CancellationToken = cancellationToken
 			};
 			function.RunTransforms(CSharpDecompiler.GetILTransforms(), context);
-			
+
 			var block = function.Body.Children.OfType<Block>().First();
 			var ilSwitch = block.Descendants.OfType<SwitchInstruction>().FirstOrDefault();
-			
+
 			if (ilSwitch != null) {
 				foreach (var section in ilSwitch.Sections) {
 					var events = FindEvents(section.Body);
@@ -88,11 +86,11 @@ namespace ILSpy.BamlDecompiler
 			}
 			return result;
 		}
-		
-		EventRegistration[] FindEvents(ILInstruction inst)
+
+		private EventRegistration[] FindEvents(ILInstruction inst)
 		{
 			var events = new List<EventRegistration>();
-			
+
 			switch (inst) {
 				case Block b:
 					foreach (var node in ((Block)inst).Instructions) {
@@ -100,31 +98,33 @@ namespace ILSpy.BamlDecompiler
 					}
 					FindEvents(((Block)inst).FinalInstruction, events);
 					break;
+
 				case Branch br:
 					return FindEvents(br.TargetBlock);
+
 				default:
 					FindEvents(inst, events);
 					break;
 			}
 			return events.ToArray();
 		}
-		
-		void FindEvents(ILInstruction inst, List<EventRegistration> events)
+
+		private void FindEvents(ILInstruction inst, List<EventRegistration> events)
 		{
 			CallInstruction call = inst as CallInstruction;
 			if (call == null || call.OpCode == OpCode.NewObj)
 				return;
-			
+
 			string eventName, handlerName;
 			if (IsAddEvent(call, out eventName, out handlerName) || IsAddAttachedEvent(call, out eventName, out handlerName))
 				events.Add(new EventRegistration { EventName = eventName, MethodName = handlerName });
 		}
-		
-		bool IsAddAttachedEvent(CallInstruction call, out string eventName, out string handlerName)
+
+		private bool IsAddAttachedEvent(CallInstruction call, out string eventName, out string handlerName)
 		{
 			eventName = "";
 			handlerName = "";
-			
+
 			if (call.Arguments.Count == 3) {
 				var addMethod = call.Method;
 				if (addMethod.Name != "AddHandler" || addMethod.Parameters.Count != 2)
@@ -144,15 +144,15 @@ namespace ILSpy.BamlDecompiler
 				handlerName = ((IInstructionWithMethodOperand)ldftn).Method.Name;
 				return true;
 			}
-			
+
 			return false;
 		}
-		
-		bool IsAddEvent(CallInstruction call, out string eventName, out string handlerName)
+
+		private bool IsAddEvent(CallInstruction call, out string eventName, out string handlerName)
 		{
 			eventName = "";
 			handlerName = "";
-			
+
 			if (call.Arguments.Count == 2) {
 				var addMethod = call.Method;
 				if (!addMethod.Name.StartsWith("add_", StringComparison.Ordinal) || addMethod.Parameters.Count != 1)
@@ -167,7 +167,7 @@ namespace ILSpy.BamlDecompiler
 				handlerName = ((IInstructionWithMethodOperand)ldftn).Method.Name;
 				return true;
 			}
-			
+
 			return false;
 		}
 	}

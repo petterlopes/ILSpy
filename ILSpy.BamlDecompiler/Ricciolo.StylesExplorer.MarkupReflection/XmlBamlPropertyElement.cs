@@ -9,7 +9,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 	{
 		private readonly PropertyType _propertyType;
 		private PropertyDeclaration propertyDeclaration;
-		
+
 		public XmlBamlPropertyElement(PropertyType propertyType, PropertyDeclaration propertyDeclaration)
 		{
 			_propertyType = propertyType;
@@ -24,16 +24,13 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 			this.TypeDeclaration = propertyDeclaration.DeclaringType;
 		}
 
-		public PropertyDeclaration PropertyDeclaration
-		{
-			get
-			{
+		public PropertyDeclaration PropertyDeclaration {
+			get {
 				return this.propertyDeclaration;
 			}
 		}
 
-		public PropertyType PropertyType
-		{
+		public PropertyType PropertyType {
 			get { return _propertyType; }
 		}
 

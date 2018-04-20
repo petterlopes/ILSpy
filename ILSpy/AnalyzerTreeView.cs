@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -30,12 +30,10 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	public class AnalyzerTreeView : SharpTreeView, IPane
 	{
-		static AnalyzerTreeView instance;
+		private static AnalyzerTreeView instance;
 
-		public static AnalyzerTreeView Instance
-		{
-			get
-			{
+		public static AnalyzerTreeView Instance {
+			get {
 				if (instance == null) {
 					App.Current.VerifyAccess();
 					instance = new AnalyzerTreeView();
@@ -53,7 +51,7 @@ namespace ICSharpCode.ILSpy
 			MainWindow.Instance.CurrentAssemblyListChanged += MainWindow_Instance_CurrentAssemblyListChanged;
 		}
 
-		void MainWindow_Instance_CurrentAssemblyListChanged(object sender, NotifyCollectionChangedEventArgs e)
+		private void MainWindow_Instance_CurrentAssemblyListChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.Action == NotifyCollectionChangedAction.Reset) {
 				this.Root.Children.Clear();
@@ -83,7 +81,7 @@ namespace ICSharpCode.ILSpy
 			this.SelectedItem = node;
 			this.FocusNode(node);
 		}
-		
+
 		public void ShowOrFocus(AnalyzerTreeNode node)
 		{
 			if (node is AnalyzerEntityTreeNode) {
@@ -91,7 +89,7 @@ namespace ICSharpCode.ILSpy
 				var found = this.Root.Children.OfType<AnalyzerEntityTreeNode>().FirstOrDefault(n => n.Member == an.Member);
 				if (found != null) {
 					Show();
-					
+
 					found.IsExpanded = true;
 					this.SelectedItem = found;
 					this.FocusNode(found);
@@ -105,13 +103,13 @@ namespace ICSharpCode.ILSpy
 		{
 			this.Root.Children.Clear();
 		}
-		
-		sealed class AnalyzerRootNode : AnalyzerTreeNode
+
+		private sealed class AnalyzerRootNode : AnalyzerTreeNode
 		{
 			public override bool HandleAssemblyListChanged(ICollection<LoadedAssembly> removedAssemblies, ICollection<LoadedAssembly> addedAssemblies)
 			{
 				this.Children.RemoveAll(
-					delegate(SharpTreeNode n) {
+					delegate (SharpTreeNode n) {
 						AnalyzerTreeNode an = n as AnalyzerTreeNode;
 						return an == null || !an.HandleAssemblyListChanged(removedAssemblies, addedAssemblies);
 					});

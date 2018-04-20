@@ -12,7 +12,7 @@ namespace AvalonDock
 		{
 		}
 	}
-	
+
 	public class Resizer : Thumb
 	{
 		static Resizer()
@@ -25,9 +25,8 @@ namespace AvalonDock
 			HorizontalAlignmentProperty.OverrideMetadata(typeof(Resizer), new FrameworkPropertyMetadata(HorizontalAlignment.Stretch, FrameworkPropertyMetadataOptions.AffectsParentMeasure));
 			VerticalAlignmentProperty.OverrideMetadata(typeof(Resizer), new FrameworkPropertyMetadata(VerticalAlignment.Stretch, FrameworkPropertyMetadataOptions.AffectsParentMeasure));
 		}
-
 	}
-	
+
 	public enum AvalonDockBrushes
 	{
 		DefaultBackgroundBrush,
@@ -58,7 +57,7 @@ namespace AvalonDock
 		NavigatorWindowSelectionBorderbrush,
 		NavigatorWindowBottomBackground
 	}
-	
+
 	public enum ContextMenuElement
 	{
 		DockablePane,

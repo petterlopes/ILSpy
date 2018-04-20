@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace ICSharpCode.ILSpy.AddIn.Commands
 {
-	class OpenProjectOutputCommand : ILSpyCommand
+	internal class OpenProjectOutputCommand : ILSpyCommand
 	{
-		static OpenProjectOutputCommand instance;
+		private static OpenProjectOutputCommand instance;
 
 		public OpenProjectOutputCommand(ILSpyAddInPackage owner)
 			: base(owner, PkgCmdIDList.cmdidOpenProjectOutputInILSpy)

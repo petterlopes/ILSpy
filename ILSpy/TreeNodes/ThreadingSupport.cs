@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -30,31 +30,31 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Adds threading support to nodes
 	/// </summary>
-	class ThreadingSupport
+	internal class ThreadingSupport
 	{
-		Task<List<SharpTreeNode>> loadChildrenTask;
-		CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-		
+		private Task<List<SharpTreeNode>> loadChildrenTask;
+		private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
 		public bool IsRunning {
 			get { return loadChildrenTask != null && !loadChildrenTask.IsCompleted; }
 		}
-		
+
 		public void Cancel()
 		{
 			cancellationTokenSource.Cancel();
 			loadChildrenTask = null;
 			cancellationTokenSource = new CancellationTokenSource();
 		}
-		
+
 		/// <summary>
 		/// Starts loading the children of the specified node.
 		/// </summary>
 		public void LoadChildren(SharpTreeNode node, Func<CancellationToken, IEnumerable<SharpTreeNode>> fetchChildren)
 		{
 			node.Children.Add(new LoadingTreeNode());
-			
+
 			CancellationToken ct = cancellationTokenSource.Token;
-			
+
 			var fetchChildrenEnumerable = fetchChildren(ct);
 			Task<List<SharpTreeNode>> thisTask = null;
 			thisTask = new Task<List<SharpTreeNode>>(
@@ -92,12 +92,12 @@ namespace ICSharpCode.ILSpy.TreeNodes
 							}
 						}));
 				});
-			
+
 			// Give the task a bit time to complete before we return to WPF - this keeps "Loading..."
 			// from showing up for very short waits.
 			thisTask.Wait(TimeSpan.FromMilliseconds(200));
 		}
-		
+
 		public void Decompile(Language language, ITextOutput output, DecompilationOptions options, Action ensureLazyChildren)
 		{
 			var loadChildrenTask = this.loadChildrenTask;
@@ -111,41 +111,41 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				}
 			}
 		}
-		
-		sealed class LoadingTreeNode : ILSpyTreeNode
+
+		private sealed class LoadingTreeNode : ILSpyTreeNode
 		{
 			public override object Text {
 				get { return "Loading..."; }
 			}
-			
+
 			public override FilterResult Filter(FilterSettings settings)
 			{
 				return FilterResult.Match;
 			}
-			
+
 			public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
 			{
 			}
 		}
-		
-		sealed class ErrorTreeNode : ILSpyTreeNode
+
+		private sealed class ErrorTreeNode : ILSpyTreeNode
 		{
-			readonly string text;
-			
+			private readonly string text;
+
 			public override object Text {
 				get { return text; }
 			}
-			
+
 			public ErrorTreeNode(string text)
 			{
 				this.text = text;
 			}
-			
+
 			public override FilterResult Filter(FilterSettings settings)
 			{
 				return FilterResult.Match;
 			}
-			
+
 			public override void Decompile(Language language, ITextOutput output, DecompilationOptions options)
 			{
 			}

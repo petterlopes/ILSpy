@@ -1,14 +1,14 @@
 // Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -34,7 +34,7 @@ using Mono.Cecil;
 namespace ICSharpCode.ILSpy.TreeNodes
 {
 	[Export(typeof(IResourceNodeFactory))]
-	sealed class ResourcesFileTreeNodeFactory : IResourceNodeFactory
+	internal sealed class ResourcesFileTreeNodeFactory : IResourceNodeFactory
 	{
 		public ILSpyTreeNode CreateNode(Resource resource)
 		{
@@ -51,10 +51,10 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		}
 	}
 
-	sealed class ResourcesFileTreeNode : ResourceTreeNode
+	internal sealed class ResourcesFileTreeNode : ResourceTreeNode
 	{
-		readonly ICollection<KeyValuePair<string, string>> stringTableEntries = new ObservableCollection<KeyValuePair<string, string>>();
-		readonly ICollection<SerializedObjectRepresentation> otherEntries = new ObservableCollection<SerializedObjectRepresentation>();
+		private readonly ICollection<KeyValuePair<string, string>> stringTableEntries = new ObservableCollection<KeyValuePair<string, string>>();
+		private readonly ICollection<SerializedObjectRepresentation> otherEntries = new ObservableCollection<SerializedObjectRepresentation>();
 
 		public ResourcesFileTreeNode(EmbeddedResource er)
 			: base(er)
@@ -62,8 +62,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.LazyLoading = true;
 		}
 
-		public override object Icon
-		{
+		public override object Icon {
 			get { return Images.ResourceResourcesFile; }
 		}
 
@@ -76,8 +75,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				ResourceReader reader;
 				try {
 					reader = new ResourceReader(s);
-				}
-				catch (ArgumentException) {
+				} catch (ArgumentException) {
 					return;
 				}
 				foreach (DictionaryEntry entry in reader.Cast<DictionaryEntry>().OrderBy(e => e.Key.ToString())) {
@@ -113,7 +111,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				otherEntries.Add(new SerializedObjectRepresentation(keyString, entryType, entry.Value.ToString()));
 			}
 		}
-		
+
 		public override bool Save(DecompilerTextView textView)
 		{
 			EmbeddedResource er = this.Resource as EmbeddedResource;
@@ -130,6 +128,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 								s.CopyTo(fs);
 							}
 							break;
+
 						case 2:
 							var reader = new ResourceReader(s);
 							using (var writer = new ResXResourceWriter(dlg.OpenFile())) {

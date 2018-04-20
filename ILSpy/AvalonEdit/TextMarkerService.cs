@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -28,14 +28,15 @@ using ICSharpCode.AvalonEdit.Rendering;
 namespace ICSharpCode.ILSpy.AvalonEdit
 {
 	using TextView = ICSharpCode.AvalonEdit.Rendering.TextView;
+
 	/// <summary>
 	/// Handles the text markers for a code editor.
 	/// </summary>
-	sealed class TextMarkerService : DocumentColorizingTransformer, IBackgroundRenderer, ITextMarkerService
+	internal sealed class TextMarkerService : DocumentColorizingTransformer, IBackgroundRenderer, ITextMarkerService
 	{
-		TextSegmentCollection<TextMarker> markers;
-		TextView textView;
-		
+		private TextSegmentCollection<TextMarker> markers;
+		private TextView textView;
+
 		public TextMarkerService(TextView textView)
 		{
 			if (textView == null)
@@ -45,32 +46,33 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 			OnDocumentChanged(null, null);
 		}
 
-		void OnDocumentChanged(object sender, EventArgs e)
+		private void OnDocumentChanged(object sender, EventArgs e)
 		{
 			if (textView.Document != null)
 				markers = new TextSegmentCollection<TextMarker>(textView.Document);
 			else
 				markers = null;
 		}
-		
+
 		#region ITextMarkerService
+
 		public ITextMarker Create(int startOffset, int length)
 		{
 			if (markers == null)
 				throw new InvalidOperationException("Cannot create a marker when not attached to a document");
-			
+
 			int textLength = textView.Document.TextLength;
 			if (startOffset < 0 || startOffset > textLength)
 				throw new ArgumentOutOfRangeException(nameof(startOffset), startOffset, "Value must be between 0 and " + textLength);
 			if (length < 0 || startOffset + length > textLength)
 				throw new ArgumentOutOfRangeException(nameof(length), length, "length must not be negative and startOffset+length must not be after the end of the document");
-			
+
 			TextMarker m = new TextMarker(this, startOffset, length);
 			markers.Add(m);
 			// no need to mark segment for redraw: the text marker is invisible until a property is set
 			return m;
 		}
-		
+
 		public IEnumerable<ITextMarker> GetMarkersAtOffset(int offset)
 		{
 			if (markers == null)
@@ -78,11 +80,11 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 			else
 				return markers.FindSegmentsContaining(offset);
 		}
-		
+
 		public IEnumerable<ITextMarker> TextMarkers {
 			get { return markers ?? Enumerable.Empty<ITextMarker>(); }
 		}
-		
+
 		public void RemoveAll(Predicate<ITextMarker> predicate)
 		{
 			if (predicate == null)
@@ -94,7 +96,7 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
+
 		public void Remove(ITextMarker marker)
 		{
 			if (marker == null)
@@ -105,7 +107,7 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				m.OnDeleted();
 			}
 		}
-		
+
 		/// <summary>
 		/// Redraws the specified text segment.
 		/// </summary>
@@ -115,11 +117,13 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 			if (RedrawRequested != null)
 				RedrawRequested(this, EventArgs.Empty);
 		}
-		
+
 		public event EventHandler RedrawRequested;
-		#endregion
-		
+
+		#endregion ITextMarkerService
+
 		#region DocumentColorizingTransformer
+
 		protected override void ColorizeLine(DocumentLine line)
 		{
 			if (markers == null)
@@ -150,16 +154,18 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				);
 			}
 		}
-		#endregion
-		
+
+		#endregion DocumentColorizingTransformer
+
 		#region IBackgroundRenderer
+
 		public KnownLayer Layer {
 			get {
 				// draw behind selection
 				return KnownLayer.Selection;
 			}
 		}
-		
+
 		public void Draw(ICSharpCode.AvalonEdit.Rendering.TextView textView, DrawingContext drawingContext)
 		{
 			if (textView == null)
@@ -192,23 +198,23 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 					foreach (Rect r in BackgroundGeometryBuilder.GetRectsForSegment(textView, marker)) {
 						Point startPoint = r.BottomLeft;
 						Point endPoint = r.BottomRight;
-						
+
 						Brush usedBrush = new SolidColorBrush(marker.MarkerColor);
 						usedBrush.Freeze();
 						if ((marker.MarkerTypes & TextMarkerTypes.SquigglyUnderline) != 0) {
 							double offset = 2.5;
-							
+
 							int count = Math.Max((int)((endPoint.X - startPoint.X) / offset) + 1, 4);
-							
+
 							StreamGeometry geometry = new StreamGeometry();
-							
+
 							using (StreamGeometryContext ctx = geometry.Open()) {
 								ctx.BeginFigure(startPoint, false, false);
 								ctx.PolyLineTo(CreatePoints(startPoint, endPoint, offset, count).ToArray(), true, false);
 							}
-							
+
 							geometry.Freeze();
-							
+
 							Pen usedPen = new Pen(usedBrush, 1);
 							usedPen.Freeze();
 							drawingContext.DrawGeometry(Brushes.Transparent, usedPen, geometry);
@@ -228,19 +234,20 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
-		IEnumerable<Point> CreatePoints(Point start, Point end, double offset, int count)
+
+		private IEnumerable<Point> CreatePoints(Point start, Point end, double offset, int count)
 		{
 			for (int i = 0; i < count; i++)
 				yield return new Point(start.X + i * offset, start.Y - ((i + 1) % 2 == 0 ? offset : 0));
 		}
-		#endregion
+
+		#endregion IBackgroundRenderer
 	}
-	
-	sealed class TextMarker : TextSegment, ITextMarker
+
+	internal sealed class TextMarker : TextSegment, ITextMarker
 	{
-		readonly TextMarkerService service;
-		
+		private readonly TextMarkerService service;
+
 		public TextMarker(TextMarkerService service, int startOffset, int length)
 		{
 			if (service == null)
@@ -250,31 +257,31 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 			this.Length = length;
 			this.markerTypes = TextMarkerTypes.None;
 		}
-		
+
 		public event EventHandler Deleted;
-		
+
 		public bool IsDeleted {
 			get { return !this.IsConnectedToCollection; }
 		}
-		
+
 		public void Delete()
 		{
 			service.Remove(this);
 		}
-		
+
 		internal void OnDeleted()
 		{
 			if (Deleted != null)
 				Deleted(this, EventArgs.Empty);
 		}
-		
-		void Redraw()
+
+		private void Redraw()
 		{
 			service.Redraw(this);
 		}
-		
-		Color? backgroundColor;
-		
+
+		private Color? backgroundColor;
+
 		public Color? BackgroundColor {
 			get { return backgroundColor; }
 			set {
@@ -284,9 +291,9 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
-		Color? foregroundColor;
-		
+
+		private Color? foregroundColor;
+
 		public Color? ForegroundColor {
 			get { return foregroundColor; }
 			set {
@@ -296,9 +303,9 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
-		FontWeight? fontWeight;
-		
+
+		private FontWeight? fontWeight;
+
 		public FontWeight? FontWeight {
 			get { return fontWeight; }
 			set {
@@ -308,9 +315,9 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
-		FontStyle? fontStyle;
-		
+
+		private FontStyle? fontStyle;
+
 		public FontStyle? FontStyle {
 			get { return fontStyle; }
 			set {
@@ -320,11 +327,11 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
+
 		public object Tag { get; set; }
-		
-		TextMarkerTypes markerTypes;
-		
+
+		private TextMarkerTypes markerTypes;
+
 		public TextMarkerTypes MarkerTypes {
 			get { return markerTypes; }
 			set {
@@ -334,9 +341,9 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
-		Color markerColor;
-		
+
+		private Color markerColor;
+
 		public Color MarkerColor {
 			get { return markerColor; }
 			set {
@@ -346,7 +353,7 @@ namespace ICSharpCode.ILSpy.AvalonEdit
 				}
 			}
 		}
-		
+
 		public object ToolTip { get; set; }
 	}
 }

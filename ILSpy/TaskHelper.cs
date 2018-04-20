@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -26,14 +26,14 @@ namespace ICSharpCode.ILSpy
 	public static class TaskHelper
 	{
 		public static readonly Task CompletedTask = FromResult<object>(null);
-		
+
 		public static Task<T> FromResult<T>(T result)
 		{
 			TaskCompletionSource<T> tcs = new TaskCompletionSource<T>();
 			tcs.SetResult(result);
 			return tcs.Task;
 		}
-		
+
 		public static Task<T> FromException<T>(Exception ex)
 		{
 			var tcs = new TaskCompletionSource<T>();
@@ -57,17 +57,20 @@ namespace ICSharpCode.ILSpy
 				case TaskStatus.RanToCompletion:
 					tcs.SetResult(task.Result);
 					break;
+
 				case TaskStatus.Canceled:
 					tcs.SetCanceled();
 					break;
+
 				case TaskStatus.Faulted:
 					tcs.SetException(task.Exception.InnerExceptions);
 					break;
+
 				default:
 					throw new InvalidOperationException("The input task must have already finished");
 			}
 		}
-		
+
 		/// <summary>
 		/// Sets the result of the TaskCompletionSource based on the result of the finished task.
 		/// </summary>
@@ -77,17 +80,20 @@ namespace ICSharpCode.ILSpy
 				case TaskStatus.RanToCompletion:
 					tcs.SetResult(null);
 					break;
+
 				case TaskStatus.Canceled:
 					tcs.SetCanceled();
 					break;
+
 				case TaskStatus.Faulted:
 					tcs.SetException(task.Exception.InnerExceptions);
 					break;
+
 				default:
 					throw new InvalidOperationException("The input task must have already finished");
 			}
 		}
-		
+
 		public static Task Then<T>(this Task<T> task, Action<T> action)
 		{
 			if (action == null)
@@ -180,14 +186,14 @@ namespace ICSharpCode.ILSpy
 				}
 			}, CancellationToken.None, TaskContinuationOptions.NotOnCanceled, TaskScheduler.FromCurrentSynchronizationContext());
 		}
-		
+
 		/// <summary>
 		/// Ignore exceptions thrown by the task.
 		/// </summary>
 		public static void IgnoreExceptions(this Task task)
 		{
 		}
-		
+
 		/// <summary>
 		/// Handle exceptions by displaying the error message in the text view.
 		/// </summary>

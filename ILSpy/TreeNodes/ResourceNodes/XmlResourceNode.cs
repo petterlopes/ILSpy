@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -29,7 +29,7 @@ using Mono.Cecil;
 namespace ICSharpCode.ILSpy.Xaml
 {
 	[Export(typeof(IResourceNodeFactory))]
-	sealed class XmlResourceNodeFactory : IResourceNodeFactory
+	internal sealed class XmlResourceNodeFactory : IResourceNodeFactory
 	{
 		private readonly static string[] xmlFileExtensions = { ".xml", ".xsd", ".xslt" };
 
@@ -40,33 +40,30 @@ namespace ICSharpCode.ILSpy.Xaml
 				return CreateNode(er.Name, er.GetResourceStream());
 			return null;
 		}
-		
+
 		public ILSpyTreeNode CreateNode(string key, object data)
 		{
 			if (!(data is Stream))
-			    return null;
-			foreach (string fileExt in xmlFileExtensions)
-			{
+				return null;
+			foreach (string fileExt in xmlFileExtensions) {
 				if (key.EndsWith(fileExt, StringComparison.OrdinalIgnoreCase))
 					return new XmlResourceEntryNode(key, (Stream)data);
 			}
 			return null;
 		}
 	}
-	
-	sealed class XmlResourceEntryNode : ResourceEntryNode
+
+	internal sealed class XmlResourceEntryNode : ResourceEntryNode
 	{
-		string xml;
-		
+		private string xml;
+
 		public XmlResourceEntryNode(string key, Stream data)
 			: base(key, data)
 		{
 		}
-		
-		public override object Icon
-		{
-			get
-			{
+
+		public override object Icon {
+			get {
 				string text = (string)Text;
 				if (text.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
 					return Images.ResourceXml;
@@ -83,7 +80,7 @@ namespace ICSharpCode.ILSpy.Xaml
 		{
 			AvalonEditTextOutput output = new AvalonEditTextOutput();
 			IHighlightingDefinition highlighting = null;
-			
+
 			textView.RunWithCancellation(
 				token => Task.Factory.StartNew(
 					() => {
@@ -96,8 +93,7 @@ namespace ICSharpCode.ILSpy.Xaml
 							}
 							output.Write(xml);
 							highlighting = HighlightingManager.Instance.GetDefinitionByExtension(".xml");
-						}
-						catch (Exception ex) {
+						} catch (Exception ex) {
 							output.Write(ex.ToString());
 						}
 						return output;

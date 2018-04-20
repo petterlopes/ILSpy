@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -35,31 +35,31 @@ namespace ICSharpCode.ILSpy.Controls
 		public static void SetValueToExtension(this DependencyObject targetObject, DependencyProperty property, MarkupExtension markupExtension)
 		{
 			// This method was copied from ICSharpCode.Core.Presentation (with permission to switch license to X11)
-			
+
 			if (targetObject == null)
 				throw new ArgumentNullException(nameof(targetObject));
 			if (property == null)
 				throw new ArgumentNullException(nameof(property));
 			if (markupExtension == null)
 				throw new ArgumentNullException(nameof(markupExtension));
-			
+
 			var serviceProvider = new SetValueToExtensionServiceProvider(targetObject, property);
 			targetObject.SetValue(property, markupExtension.ProvideValue(serviceProvider));
 		}
-		
-		sealed class SetValueToExtensionServiceProvider : IServiceProvider, IProvideValueTarget
+
+		private sealed class SetValueToExtensionServiceProvider : IServiceProvider, IProvideValueTarget
 		{
 			// This class was copied from ICSharpCode.Core.Presentation (with permission to switch license to X11)
-			
-			readonly DependencyObject targetObject;
-			readonly DependencyProperty targetProperty;
-			
+
+			private readonly DependencyObject targetObject;
+			private readonly DependencyProperty targetProperty;
+
 			public SetValueToExtensionServiceProvider(DependencyObject targetObject, DependencyProperty property)
 			{
 				this.targetObject = targetObject;
 				this.targetProperty = property;
 			}
-			
+
 			public object GetService(Type serviceType)
 			{
 				if (serviceType == typeof(IProvideValueTarget))
@@ -67,11 +67,11 @@ namespace ICSharpCode.ILSpy.Controls
 				else
 					return null;
 			}
-			
+
 			public object TargetObject {
 				get { return targetObject; }
 			}
-			
+
 			public object TargetProperty {
 				get { return targetProperty; }
 			}

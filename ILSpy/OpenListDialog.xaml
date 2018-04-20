@@ -18,7 +18,7 @@
 		<StackPanel>
 			<Label>Select a list:</Label>
 		</StackPanel>
-		<ListView Name="listView" Grid.Row="1" Margin="0, 8" controls:SortableGridViewColumn.SortMode="Automatic" SelectionChanged="ListView_SelectionChanged" 
+		<ListView Name="listView" Grid.Row="1" Margin="0, 8" controls:SortableGridViewColumn.SortMode="Automatic" SelectionChanged="ListView_SelectionChanged"
 				  Loaded="listView_Loaded" SelectionMode="Single" MouseDoubleClick="listView_MouseDoubleClick">
 			<ListView.View>
 				<GridView>

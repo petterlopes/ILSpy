@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace Ricciolo.StylesExplorer.MarkupReflection
 {
-	class XmlBamlElement : XmlBamlNode
+	internal class XmlBamlElement : XmlBamlNode
 	{
 		public XmlBamlElement()
 		{
@@ -19,9 +19,9 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 		}
 
 		public List<XmlNamespace> Namespaces { get; } = new List<XmlNamespace>();
-		
+
 		public XmlBamlElement Parent { get; }
-		
+
 		public TypeDeclaration TypeDeclaration { get; set; }
 
 		public override XmlNodeType NodeType {
@@ -29,7 +29,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 		}
 
 		public long Position { get; set; }
-		
+
 		public bool IsImplicit { get; set; }
 
 		public override string ToString()
@@ -38,7 +38,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 		}
 	}
 
-	class XmlBamlEndElement : XmlBamlElement
+	internal class XmlBamlEndElement : XmlBamlElement
 	{
 		public XmlBamlEndElement(XmlBamlElement start)
 		{

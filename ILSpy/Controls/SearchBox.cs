@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -27,28 +27,29 @@ namespace ICSharpCode.ILSpy.Controls
 {
 	public class SearchBox : TextBox
 	{
-		static SearchBox() {
+		static SearchBox()
+		{
 			DefaultStyleKeyProperty.OverrideMetadata(
 				typeof(SearchBox),
 				new FrameworkPropertyMetadata(typeof(SearchBox)));
 		}
-		
+
 		#region Dependency properties
-		
+
 		public static DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(SearchBox));
-		
+
 		public static DependencyProperty WatermarkColorProperty = DependencyProperty.Register("WatermarkColor", typeof(Brush), typeof(SearchBox));
-		
+
 		public static DependencyProperty HasTextProperty = DependencyProperty.Register("HasText", typeof(bool), typeof(SearchBox));
-		
+
 		public static readonly DependencyProperty UpdateDelayProperty =
 			DependencyProperty.Register("UpdateDelay", typeof(TimeSpan), typeof(SearchBox),
-			                            new FrameworkPropertyMetadata(TimeSpan.FromMilliseconds(200)));
-		
-		#endregion
-		
+										new FrameworkPropertyMetadata(TimeSpan.FromMilliseconds(200)));
+
+		#endregion Dependency properties
+
 		#region Public Properties
-		
+
 		public string WatermarkText {
 			get { return (string)GetValue(WatermarkTextProperty); }
 			set { SetValue(WatermarkTextProperty, value); }
@@ -58,7 +59,7 @@ namespace ICSharpCode.ILSpy.Controls
 			get { return (Brush)GetValue(WatermarkColorProperty); }
 			set { SetValue(WatermarkColorProperty, value); }
 		}
-		
+
 		public bool HasText {
 			get { return (bool)GetValue(HasTextProperty); }
 			private set { SetValue(HasTextProperty, value); }
@@ -68,25 +69,27 @@ namespace ICSharpCode.ILSpy.Controls
 			get { return (TimeSpan)GetValue(UpdateDelayProperty); }
 			set { SetValue(UpdateDelayProperty, value); }
 		}
-		
-		#endregion
-		
+
+		#endregion Public Properties
+
 		#region Handlers
 
-		private void IconBorder_MouseLeftButtonUp(object obj, MouseButtonEventArgs e) {
+		private void IconBorder_MouseLeftButtonUp(object obj, MouseButtonEventArgs e)
+		{
 			if (this.HasText)
 				this.Text = string.Empty;
 		}
 
-		#endregion
-		
+		#endregion Handlers
+
 		#region Overrides
-		
-		DispatcherTimer timer;
-		
-		protected override void OnTextChanged(TextChangedEventArgs e) {
+
+		private DispatcherTimer timer;
+
+		protected override void OnTextChanged(TextChangedEventArgs e)
+		{
 			base.OnTextChanged(e);
-			
+
 			HasText = this.Text.Length > 0;
 			if (timer == null) {
 				timer = new DispatcherTimer();
@@ -97,7 +100,7 @@ namespace ICSharpCode.ILSpy.Controls
 			timer.Start();
 		}
 
-		void timer_Tick(object sender, EventArgs e)
+		private void timer_Tick(object sender, EventArgs e)
 		{
 			timer.Stop();
 			timer = null;
@@ -106,7 +109,7 @@ namespace ICSharpCode.ILSpy.Controls
 				textBinding.UpdateSource();
 			}
 		}
-		
+
 		protected override void OnLostFocus(RoutedEventArgs e)
 		{
 			if (!HasText) {
@@ -114,10 +117,10 @@ namespace ICSharpCode.ILSpy.Controls
 				if (wl != null)
 					wl.Visibility = Visibility.Visible;
 			}
-			
+
 			base.OnLostFocus(e);
 		}
-		
+
 		protected override void OnGotFocus(RoutedEventArgs e)
 		{
 			if (!HasText) {
@@ -125,11 +128,12 @@ namespace ICSharpCode.ILSpy.Controls
 				if (wl != null)
 					wl.Visibility = Visibility.Hidden;
 			}
-			
+
 			base.OnGotFocus(e);
 		}
 
-		public override void OnApplyTemplate() {
+		public override void OnApplyTemplate()
+		{
 			base.OnApplyTemplate();
 
 			Border iconBorder = GetTemplateChild("PART_IconBorder") as Border;
@@ -137,7 +141,7 @@ namespace ICSharpCode.ILSpy.Controls
 				iconBorder.MouseLeftButtonUp += IconBorder_MouseLeftButtonUp;
 			}
 		}
-		
+
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			if (e.Key == Key.Escape && this.Text.Length > 0) {
@@ -147,6 +151,7 @@ namespace ICSharpCode.ILSpy.Controls
 				base.OnKeyDown(e);
 			}
 		}
-		#endregion
+
+		#endregion Overrides
 	}
 }

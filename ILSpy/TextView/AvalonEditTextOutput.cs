@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -40,14 +40,14 @@ namespace ICSharpCode.ILSpy.TextView
 		public bool IsLocal;
 		public bool IsLocalTarget;
 	}
-	
+
 	/// <summary>
 	/// Stores the positions of the definitions that were written to the text output.
 	/// </summary>
-	sealed class DefinitionLookup
+	internal sealed class DefinitionLookup
 	{
 		internal Dictionary<object, int> definitions = new Dictionary<object, int>();
-		
+
 		public int GetDefinitionPosition(object definition)
 		{
 			int val;
@@ -56,83 +56,85 @@ namespace ICSharpCode.ILSpy.TextView
 			else
 				return -1;
 		}
-		
+
 		public void AddDefinition(object definition, int offset)
 		{
 			definitions[definition] = offset;
 		}
 	}
-	
+
 	/// <summary>
 	/// Text output implementation for AvalonEdit.
 	/// </summary>
 	public sealed class AvalonEditTextOutput : ISmartTextOutput
 	{
-		int lastLineStart = 0;
-		int lineNumber = 1;
-		readonly StringBuilder b = new StringBuilder();
-		
+		private int lastLineStart = 0;
+		private int lineNumber = 1;
+		private readonly StringBuilder b = new StringBuilder();
+
 		/// <summary>Current indentation level</summary>
-		int indent;
+		private int indent;
+
 		/// <summary>Whether indentation should be inserted on the next write</summary>
-		bool needsIndent;
+		private bool needsIndent;
 
 		public string IndentationString { get; set; } = "\t";
-		
+
 		internal readonly List<VisualLineElementGenerator> elementGenerators = new List<VisualLineElementGenerator>();
-		
+
 		/// <summary>List of all references that were written to the output</summary>
-		TextSegmentCollection<ReferenceSegment> references = new TextSegmentCollection<ReferenceSegment>();
-		
+		private TextSegmentCollection<ReferenceSegment> references = new TextSegmentCollection<ReferenceSegment>();
+
 		/// <summary>Stack of the fold markers that are open but not closed yet</summary>
-		Stack<NewFolding> openFoldings = new Stack<NewFolding>();
-		
+		private Stack<NewFolding> openFoldings = new Stack<NewFolding>();
+
 		/// <summary>List of all foldings that were written to the output</summary>
 		internal readonly List<NewFolding> Foldings = new List<NewFolding>();
-		
+
 		internal readonly DefinitionLookup DefinitionLookup = new DefinitionLookup();
-		
+
 		/// <summary>Embedded UIElements, see <see cref="UIElementGenerator"/>.</summary>
 		internal readonly List<KeyValuePair<int, Lazy<UIElement>>> UIElements = new List<KeyValuePair<int, Lazy<UIElement>>>();
 
 		public RichTextModel HighlightingModel { get; } = new RichTextModel();
-		
+
 		public AvalonEditTextOutput()
 		{
 		}
-		
+
 		/// <summary>
 		/// Gets the list of references (hyperlinks).
 		/// </summary>
 		internal TextSegmentCollection<ReferenceSegment> References {
 			get { return references; }
 		}
-		
+
 		public void AddVisualLineElementGenerator(VisualLineElementGenerator elementGenerator)
 		{
 			elementGenerators.Add(elementGenerator);
 		}
-		
+
 		/// <summary>
 		/// Controls the maximum length of the text.
 		/// When this length is exceeded, an <see cref="OutputLengthExceededException"/> will be thrown,
 		/// thus aborting the decompilation.
 		/// </summary>
 		public int LengthLimit = int.MaxValue;
-		
+
 		public int TextLength {
 			get { return b.Length; }
 		}
-		
+
 		public TextLocation Location {
 			get {
 				return new TextLocation(lineNumber, b.Length - lastLineStart + 1 + (needsIndent ? indent : 0));
 			}
 		}
-		
+
 		#region Text Document
-		TextDocument textDocument;
-		
+
+		private TextDocument textDocument;
+
 		/// <summary>
 		/// Prepares the TextDocument.
 		/// This method may be called by the background thread writing to the output.
@@ -149,7 +151,7 @@ namespace ICSharpCode.ILSpy.TextView
 				textDocument.SetOwnerThread(null); // release ownership
 			}
 		}
-		
+
 		/// <summary>
 		/// Retrieves the TextDocument.
 		/// Once the document is retrieved, it can no longer be written to.
@@ -160,19 +162,20 @@ namespace ICSharpCode.ILSpy.TextView
 			textDocument.SetOwnerThread(System.Threading.Thread.CurrentThread); // acquire ownership
 			return textDocument;
 		}
-		#endregion
-		
+
+		#endregion Text Document
+
 		public void Indent()
 		{
 			indent++;
 		}
-		
+
 		public void Unindent()
 		{
 			indent--;
 		}
-		
-		void WriteIndent()
+
+		private void WriteIndent()
 		{
 			Debug.Assert(textDocument == null);
 			if (needsIndent) {
@@ -182,19 +185,19 @@ namespace ICSharpCode.ILSpy.TextView
 				}
 			}
 		}
-		
+
 		public void Write(char ch)
 		{
 			WriteIndent();
 			b.Append(ch);
 		}
-		
+
 		public void Write(string text)
 		{
 			WriteIndent();
 			b.Append(text);
 		}
-		
+
 		public void WriteLine()
 		{
 			Debug.Assert(textDocument == null);
@@ -206,7 +209,7 @@ namespace ICSharpCode.ILSpy.TextView
 				throw new OutputLengthExceededException();
 			}
 		}
-		
+
 		public void WriteDefinition(string text, object definition, bool isLocal = true)
 		{
 			WriteIndent();
@@ -216,7 +219,7 @@ namespace ICSharpCode.ILSpy.TextView
 			this.DefinitionLookup.AddDefinition(definition, this.TextLength);
 			references.Add(new ReferenceSegment { StartOffset = start, EndOffset = end, Reference = definition, IsLocal = isLocal, IsLocalTarget = true });
 		}
-		
+
 		public void WriteReference(string text, object reference, bool isLocal = false)
 		{
 			WriteIndent();
@@ -225,7 +228,7 @@ namespace ICSharpCode.ILSpy.TextView
 			int end = this.TextLength;
 			references.Add(new ReferenceSegment { StartOffset = start, EndOffset = end, Reference = reference, IsLocal = isLocal });
 		}
-		
+
 		public void MarkFoldStart(string collapsedText = "...", bool defaultCollapsed = false)
 		{
 			WriteIndent();
@@ -236,14 +239,14 @@ namespace ICSharpCode.ILSpy.TextView
 					DefaultClosed = defaultCollapsed
 				});
 		}
-		
+
 		public void MarkFoldEnd()
 		{
 			NewFolding f = openFoldings.Pop();
 			f.EndOffset = this.TextLength;
 			this.Foldings.Add(f);
 		}
-		
+
 		public void AddUIElement(Func<UIElement> element)
 		{
 			if (element != null) {
@@ -253,9 +256,9 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 		}
 
-		readonly Stack<HighlightingColor> colorStack = new Stack<HighlightingColor>();
-		HighlightingColor currentColor = new HighlightingColor();
-		int currentColorBegin = -1;
+		private readonly Stack<HighlightingColor> colorStack = new Stack<HighlightingColor>();
+		private HighlightingColor currentColor = new HighlightingColor();
+		private int currentColorBegin = -1;
 
 		public void BeginSpan(HighlightingColor highlightingColor)
 		{

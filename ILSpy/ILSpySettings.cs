@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -29,24 +29,24 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	public class ILSpySettings
 	{
-		readonly XElement root;
-		
-		ILSpySettings()
+		private readonly XElement root;
+
+		private ILSpySettings()
 		{
 			this.root = new XElement("ILSpy");
 		}
-		
-		ILSpySettings(XElement root)
+
+		private ILSpySettings(XElement root)
 		{
 			this.root = root;
 		}
-		
+
 		public XElement this[XName section] {
 			get {
 				return root.Element(section) ?? new XElement(section);
 			}
 		}
-		
+
 		/// <summary>
 		/// Loads the settings file from disk.
 		/// </summary>
@@ -66,12 +66,12 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 		}
-		
-		static XDocument LoadWithoutCheckingCharacters(string fileName)
+
+		private static XDocument LoadWithoutCheckingCharacters(string fileName)
 		{
 			return XDocument.Load(fileName, LoadOptions.None);
 		}
-		
+
 		/// <summary>
 		/// Saves a setting section.
 		/// </summary>
@@ -86,7 +86,7 @@ namespace ICSharpCode.ILSpy
 						root.Add(section);
 				});
 		}
-		
+
 		/// <summary>
 		/// Updates the saved settings.
 		/// We always reload the file on updates to ensure we aren't overwriting unrelated changes performed
@@ -111,24 +111,24 @@ namespace ICSharpCode.ILSpy
 				doc.Save(config, SaveOptions.None);
 			}
 		}
-		
-		static string GetConfigFile()
+
+		private static string GetConfigFile()
 		{
 			string localPath = Path.Combine(Path.GetDirectoryName(typeof(MainWindow).Assembly.Location), "ILSpy.xml");
 			if (File.Exists(localPath))
 				return localPath;
 			return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ICSharpCode\\ILSpy.xml");
 		}
-		
-		const string ConfigFileMutex = "01A91708-49D1-410D-B8EB-4DE2662B3971";
-		
+
+		private const string ConfigFileMutex = "01A91708-49D1-410D-B8EB-4DE2662B3971";
+
 		/// <summary>
 		/// Helper class for serializing access to the config file when multiple ILSpy instances are running.
 		/// </summary>
-		sealed class MutexProtector : IDisposable
+		private sealed class MutexProtector : IDisposable
 		{
-			readonly Mutex mutex;
-			
+			private readonly Mutex mutex;
+
 			public MutexProtector(string name)
 			{
 				bool createdNew;
@@ -140,7 +140,7 @@ namespace ICSharpCode.ILSpy
 					}
 				}
 			}
-			
+
 			public void Dispose()
 			{
 				mutex.ReleaseMutex();

@@ -1,8 +1,6 @@
 // Copyright (c) Cristian Civera (cristian@aspitalia.com)
 // This code is distributed under the MS-PL (for details please see \doc\MS-PL.txt)
 
-using System;
-
 namespace Ricciolo.StylesExplorer.MarkupReflection
 {
 	public class XmlNamespace
@@ -28,8 +26,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 		public override int GetHashCode()
 		{
 			int hashCode = 0;
-			unchecked
-			{
+			unchecked {
 				if (Namespace != null)
 					hashCode += 1000000007 * Namespace.GetHashCode();
 				if (Prefix != null)

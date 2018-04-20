@@ -20,19 +20,15 @@ namespace ICSharpCode.ILSpy
 
 		private void OKButton_Click(object sender, RoutedEventArgs e)
 		{
-			if (!string.IsNullOrWhiteSpace(ListName.Text))
-			{
+			if (!string.IsNullOrWhiteSpace(ListName.Text)) {
 				this.DialogResult = true;
 			}
 		}
 
-		public string NewListName
-		{
-			get
-			{
+		public string NewListName {
+			get {
 				return ListName.Text;
 			}
 		}
-
 	}
 }

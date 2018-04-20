@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -26,7 +26,7 @@ namespace ICSharpCode.ILSpy
 	/// <summary>
 	/// Static methods for determining the type of a file.
 	/// </summary>
-	static class GuessFileType
+	internal static class GuessFileType
 	{
 		public static FileType DetectFileType(Stream stream)
 		{
@@ -40,6 +40,7 @@ namespace ICSharpCode.ILSpy
 						stream.Position -= 2;
 						reader = new StreamReader(stream, detectEncodingFromByteOrderMarks: true);
 						break;
+
 					case 0xefbb: // start of UTF-8 BOM
 						if (stream.ReadByte() == 0xbf) {
 							reader = new StreamReader(stream, Encoding.UTF8);
@@ -70,13 +71,13 @@ namespace ICSharpCode.ILSpy
 				return FileType.Text;
 			}
 		}
-		
-		static bool IsUTF8(Stream fs, byte firstByte, byte secondByte)
+
+		private static bool IsUTF8(Stream fs, byte firstByte, byte secondByte)
 		{
 			int max = (int)Math.Min(fs.Length, 500000); // look at max. 500 KB
 			const int ASCII = 0;
 			const int Error = 1;
-			const int UTF8  = 2;
+			const int UTF8 = 2;
 			const int UTF8Sequence = 3;
 			int state = ASCII;
 			int sequenceLength = 0;
@@ -133,8 +134,8 @@ namespace ICSharpCode.ILSpy
 			return state != Error;
 		}
 	}
-	
-	enum FileType
+
+	internal enum FileType
 	{
 		Binary,
 		Text,

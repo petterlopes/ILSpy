@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -19,7 +19,6 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -38,22 +37,22 @@ using ICSharpCode.ILSpy.TextView;
 namespace ICSharpCode.ILSpy
 {
 	[ExportMainMenuCommand(Menu = "_Help", Header = "_About", MenuOrder = 99999)]
-	sealed class AboutPage : SimpleCommand
+	internal sealed class AboutPage : SimpleCommand
 	{
 		[Import]
-		DecompilerTextView decompilerTextView = null;
-		
+		private DecompilerTextView decompilerTextView = null;
+
 		public override void Execute(object parameter)
 		{
 			MainWindow.Instance.UnselectAll();
 			Display(decompilerTextView);
 		}
-		
-		static readonly Uri UpdateUrl = new Uri("http://www.ilspy.net/updates.xml");
-		const string band = "stable";
-		
-		static AvailableVersionInfo latestAvailableVersion;
-		
+
+		private static readonly Uri UpdateUrl = new Uri("http://www.ilspy.net/updates.xml");
+		private const string band = "stable";
+
+		private static AvailableVersionInfo latestAvailableVersion;
+
 		public static void Display(DecompilerTextView textView)
 		{
 			AvalonEditTextOutput output = new AvalonEditTextOutput();
@@ -98,30 +97,30 @@ namespace ICSharpCode.ILSpy
 			output.AddVisualLineElementGenerator(new MyLinkElementGenerator("MS-PL", "resource:MS-PL.txt"));
 			textView.ShowText(output);
 		}
-		
-		sealed class MyLinkElementGenerator : LinkElementGenerator
+
+		private sealed class MyLinkElementGenerator : LinkElementGenerator
 		{
-			readonly Uri uri;
-			
+			private readonly Uri uri;
+
 			public MyLinkElementGenerator(string matchText, string url) : base(new Regex(Regex.Escape(matchText)))
 			{
 				this.uri = new Uri(url);
 				this.RequireControlModifierForClick = false;
 			}
-			
+
 			protected override Uri GetUriFromMatch(Match match)
 			{
 				return uri;
 			}
 		}
-		
-		static void AddUpdateCheckButton(StackPanel stackPanel, DecompilerTextView textView)
+
+		private static void AddUpdateCheckButton(StackPanel stackPanel, DecompilerTextView textView)
 		{
 			Button button = new Button();
 			button.Content = "Check for updates";
 			button.Cursor = Cursors.Arrow;
 			stackPanel.Children.Add(button);
-			
+
 			button.Click += delegate {
 				button.Content = "Checking...";
 				button.IsEnabled = false;
@@ -138,17 +137,17 @@ namespace ICSharpCode.ILSpy
 					}, TaskScheduler.FromCurrentSynchronizationContext());
 			};
 		}
-		
-		static readonly Version currentVersion = new Version(RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build + "." + RevisionClass.Revision);
-		
-		static void ShowAvailableVersion(AvailableVersionInfo availableVersion, StackPanel stackPanel)
+
+		private static readonly Version currentVersion = new Version(RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build + "." + RevisionClass.Revision);
+
+		private static void ShowAvailableVersion(AvailableVersionInfo availableVersion, StackPanel stackPanel)
 		{
 			if (currentVersion == availableVersion.Version) {
 				stackPanel.Children.Add(
 					new Image {
 						Width = 16, Height = 16,
 						Source = Images.OK,
-						Margin = new Thickness(4,0,4,0)
+						Margin = new Thickness(4, 0, 4, 0)
 					});
 				stackPanel.Children.Add(
 					new TextBlock {
@@ -159,7 +158,7 @@ namespace ICSharpCode.ILSpy
 				stackPanel.Children.Add(
 					new TextBlock {
 						Text = "Version " + availableVersion.Version + " is available.",
-						Margin = new Thickness(0,0,8,0),
+						Margin = new Thickness(0, 0, 8, 0),
 						VerticalAlignment = VerticalAlignment.Bottom
 					});
 				if (availableVersion.DownloadUrl != null) {
@@ -175,8 +174,8 @@ namespace ICSharpCode.ILSpy
 				stackPanel.Children.Add(new TextBlock { Text = "You are using a nightly build newer than the latest release." });
 			}
 		}
-		
-		static Task<AvailableVersionInfo> GetLatestVersionAsync()
+
+		private static Task<AvailableVersionInfo> GetLatestVersionAsync()
 		{
 			var tcs = new TaskCompletionSource<AvailableVersionInfo>();
 			new Action(() => {
@@ -184,7 +183,7 @@ namespace ICSharpCode.ILSpy
 				IWebProxy systemWebProxy = WebRequest.GetSystemWebProxy();
 				systemWebProxy.Credentials = CredentialCache.DefaultCredentials;
 				wc.Proxy = systemWebProxy;
-				wc.DownloadDataCompleted += delegate(object sender, DownloadDataCompletedEventArgs e) {
+				wc.DownloadDataCompleted += delegate (object sender, DownloadDataCompletedEventArgs e) {
 					if (e.Error != null) {
 						tcs.SetException(e.Error);
 					} else {
@@ -207,14 +206,14 @@ namespace ICSharpCode.ILSpy
 			}).BeginInvoke(null, null);
 			return tcs.Task;
 		}
-		
-		sealed class AvailableVersionInfo
+
+		private sealed class AvailableVersionInfo
 		{
 			public Version Version;
 			public string DownloadUrl;
 		}
-		
-		sealed class UpdateSettings : INotifyPropertyChanged
+
+		private sealed class UpdateSettings : INotifyPropertyChanged
 		{
 			public UpdateSettings(ILSpySettings spySettings)
 			{
@@ -227,9 +226,9 @@ namespace ICSharpCode.ILSpy
 					// https://github.com/icsharpcode/ILSpy/issues/closed/#issue/2
 				}
 			}
-			
-			bool automaticUpdateCheckEnabled;
-			
+
+			private bool automaticUpdateCheckEnabled;
+
 			public bool AutomaticUpdateCheckEnabled {
 				get { return automaticUpdateCheckEnabled; }
 				set {
@@ -240,9 +239,9 @@ namespace ICSharpCode.ILSpy
 					}
 				}
 			}
-			
-			DateTime? lastSuccessfulUpdateCheck;
-			
+
+			private DateTime? lastSuccessfulUpdateCheck;
+
 			public DateTime? LastSuccessfulUpdateCheck {
 				get { return lastSuccessfulUpdateCheck; }
 				set {
@@ -253,7 +252,7 @@ namespace ICSharpCode.ILSpy
 					}
 				}
 			}
-			
+
 			public void Save()
 			{
 				XElement updateSettings = new XElement("UpdateSettings");
@@ -262,17 +261,17 @@ namespace ICSharpCode.ILSpy
 					updateSettings.Add(new XElement("LastSuccessfulUpdateCheck", lastSuccessfulUpdateCheck));
 				ILSpySettings.SaveSettings(updateSettings);
 			}
-			
+
 			public event PropertyChangedEventHandler PropertyChanged;
-			
-			void OnPropertyChanged(string propertyName)
+
+			private void OnPropertyChanged(string propertyName)
 			{
 				if (PropertyChanged != null) {
 					PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// If automatic update checking is enabled, checks if there are any updates available.
 		/// Returns the download URL if an update is available.
@@ -286,9 +285,8 @@ namespace ICSharpCode.ILSpy
 				// perform update check if we never did one before;
 				// or if the last check wasn't in the past 7 days
 				if (s.LastSuccessfulUpdateCheck == null
-				    || s.LastSuccessfulUpdateCheck < DateTime.UtcNow.AddDays(-7)
-				    || s.LastSuccessfulUpdateCheck > DateTime.UtcNow)
-				{
+					|| s.LastSuccessfulUpdateCheck < DateTime.UtcNow.AddDays(-7)
+					|| s.LastSuccessfulUpdateCheck > DateTime.UtcNow) {
 					CheckForUpdateInternal(tcs, s);
 				} else {
 					tcs.SetResult(null);
@@ -307,7 +305,7 @@ namespace ICSharpCode.ILSpy
 			return tcs.Task;
 		}
 
-		static void CheckForUpdateInternal(TaskCompletionSource<string> tcs, UpdateSettings s)
+		private static void CheckForUpdateInternal(TaskCompletionSource<string> tcs, UpdateSettings s)
 		{
 			GetLatestVersionAsync().ContinueWith(
 				delegate (Task<AvailableVersionInfo> task) {
@@ -325,7 +323,7 @@ namespace ICSharpCode.ILSpy
 				});
 		}
 	}
-	
+
 	/// <summary>
 	/// Interface that allows plugins to extend the about page.
 	/// </summary>

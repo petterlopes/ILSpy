@@ -6,12 +6,12 @@ using System.Xml;
 
 namespace Ricciolo.StylesExplorer.MarkupReflection
 {
-	class XmlBamlSimpleProperty : XmlBamlNode
+	internal class XmlBamlSimpleProperty : XmlBamlNode
 	{
 		public string NamespaceName { get; private set; }
 		public string LocalName { get; private set; }
 		public string Value { get; private set; }
-		
+
 		public XmlBamlSimpleProperty(string namespaceName, string localName, string value)
 		{
 			if (string.IsNullOrWhiteSpace(namespaceName))
@@ -24,15 +24,14 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 			this.LocalName = localName;
 			this.Value = value;
 		}
-		
+
 		public override XmlNodeType NodeType {
 			get { return XmlNodeType.Attribute; }
 		}
-		
+
 		public override string ToString()
 		{
 			return string.Format("{{{0}}}{1}=\"{2}\"", NamespaceName, LocalName, Value);
 		}
-
 	}
 }

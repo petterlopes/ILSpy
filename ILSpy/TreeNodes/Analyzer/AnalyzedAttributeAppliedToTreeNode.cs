@@ -1,14 +1,14 @@
 // Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -17,12 +17,12 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Mono.Cecil;
-using System.Collections.Concurrent;
 using ICSharpCode.Decompiler.Util;
+using Mono.Cecil;
 
 namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 {
@@ -68,6 +68,7 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 									case "AllowMultiple":
 										this.allowMutiple = (bool)namedArgument.Argument.Value;
 										break;
+
 									case "Inherited":
 										this.inherited = (bool)namedArgument.Argument.Value;
 										break;
@@ -79,8 +80,7 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 			}
 		}
 
-		public override object Text
-		{
+		public override object Text {
 			get { return "Applied To"; }
 		}
 
@@ -134,7 +134,6 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 						}
 					}
 				}
-
 			}
 
 			if (foundInAssyOrModule) {
@@ -154,7 +153,6 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 
 		private IEnumerable<AnalyzerTreeNode> FindReferencesWithinInType(TypeDefinition type, TypeReference attrTypeRef)
 		{
-
 			bool searchRequired = (type.IsClass && usage.HasFlag(AttributeTargets.Class))
 				|| (type.IsEnum && usage.HasFlag(AttributeTargets.Enum))
 				|| (type.IsInterface && usage.HasFlag(AttributeTargets.Interface))
@@ -285,7 +283,7 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 			return !foundMethods.TryAdd(method, 0);
 		}
 
-		#endregion
+		#endregion standard custom attributes
 
 		#region search scope
 
@@ -360,8 +358,9 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 			return null;
 		}
 
-		#endregion
+		#endregion search scope
 	}
+
 	internal static class ExtensionMethods
 	{
 		public static bool HasCustomAttribute(this MemberReference member, string attributeTypeName)

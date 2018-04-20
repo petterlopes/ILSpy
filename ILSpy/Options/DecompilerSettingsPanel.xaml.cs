@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -33,20 +33,20 @@ namespace ICSharpCode.ILSpy.Options
 		{
 			InitializeComponent();
 		}
-		
+
 		public void Load(ILSpySettings settings)
 		{
 			this.DataContext = currentDecompilerSettings ?? LoadDecompilerSettings(settings);
 		}
-		
-		static DecompilerSettings currentDecompilerSettings;
-		
+
+		private static DecompilerSettings currentDecompilerSettings;
+
 		public static DecompilerSettings CurrentDecompilerSettings {
 			get {
 				return currentDecompilerSettings ?? (currentDecompilerSettings = LoadDecompilerSettings(ILSpySettings.Load()));
 			}
 		}
-		
+
 		public static DecompilerSettings LoadDecompilerSettings(ILSpySettings settings)
 		{
 			XElement e = settings["DecompilerSettings"];
@@ -61,7 +61,7 @@ namespace ICSharpCode.ILSpy.Options
 			s.AlwaysUseBraces = (bool?)e.Attribute("alwaysUseBraces") ?? s.AlwaysUseBraces;
 			return s;
 		}
-		
+
 		public void Save(XElement root)
 		{
 			DecompilerSettings s = (DecompilerSettings)this.DataContext;
@@ -81,14 +81,14 @@ namespace ICSharpCode.ILSpy.Options
 				existingElement.ReplaceWith(section);
 			else
 				root.Add(section);
-			
+
 			currentDecompilerSettings = s; // update cached settings
 		}
 	}
 
 	public class DecompilerSettings : INotifyPropertyChanged
 	{
-		bool showXmlDocumentation = true;
+		private bool showXmlDocumentation = true;
 
 		/// <summary>
 		/// Gets/Sets whether to include XML documentation comments in the decompiled code.
@@ -103,7 +103,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool foldBraces = false;
+		private bool foldBraces = false;
 
 		public bool FoldBraces {
 			get { return foldBraces; }
@@ -115,7 +115,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool expandMemberDefinitions = false;
+		private bool expandMemberDefinitions = false;
 
 		public bool ExpandMemberDefinitions {
 			get { return expandMemberDefinitions; }
@@ -127,7 +127,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool decompileMemberBodies = true;
+		private bool decompileMemberBodies = true;
 
 		/// <summary>
 		/// Gets/Sets whether member bodies should be decompiled.
@@ -142,7 +142,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool fullyQualifyAmbiguousTypeNames = true;
+		private bool fullyQualifyAmbiguousTypeNames = true;
 
 		public bool FullyQualifyAmbiguousTypeNames {
 			get { return fullyQualifyAmbiguousTypeNames; }
@@ -154,7 +154,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool useDebugSymbols = true;
+		private bool useDebugSymbols = true;
 
 		/// <summary>
 		/// Gets/Sets whether to use variable names from debug symbols, if available.
@@ -169,7 +169,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool usingDeclarations = true;
+		private bool usingDeclarations = true;
 
 		public bool UsingDeclarations {
 			get { return usingDeclarations; }
@@ -181,7 +181,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool showDebugInfo;
+		private bool showDebugInfo;
 
 		public bool ShowDebugInfo {
 			get { return showDebugInfo; }
@@ -193,7 +193,7 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool removeDeadCode = false;
+		private bool removeDeadCode = false;
 
 		public bool RemoveDeadCode {
 			get { return removeDeadCode; }
@@ -205,10 +205,10 @@ namespace ICSharpCode.ILSpy.Options
 			}
 		}
 
-		bool alwaysUseBraces = true;
+		private bool alwaysUseBraces = true;
 
 		/// <summary>
-		/// Gets/Sets whether to use braces for single-statement-blocks. 
+		/// Gets/Sets whether to use braces for single-statement-blocks.
 		/// </summary>
 		public bool AlwaysUseBraces {
 			get { return alwaysUseBraces; }

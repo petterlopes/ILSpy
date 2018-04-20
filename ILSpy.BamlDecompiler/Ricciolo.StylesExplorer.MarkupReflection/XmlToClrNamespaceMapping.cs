@@ -1,8 +1,6 @@
 // Copyright (c) Cristian Civera (cristian@aspitalia.com)
 // This code is distributed under the MS-PL (for details please see \doc\MS-PL.txt)
 
-using System;
-
 namespace Ricciolo.StylesExplorer.MarkupReflection
 {
 	/// <summary>

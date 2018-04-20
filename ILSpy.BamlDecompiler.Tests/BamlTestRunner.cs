@@ -102,7 +102,8 @@ namespace ILSpy.BamlDecompiler.Tests
 		}
 
 		#region RunTest
-		void RunTest(string name)
+
+		private void RunTest(string name)
 		{
 			RunTest(name, typeof(BamlTestRunner).Assembly.Location,
 				Path.Combine(
@@ -110,7 +111,7 @@ namespace ILSpy.BamlDecompiler.Tests
 					"../../../../ILSpy.BamlDecompiler.Tests", name + ".xaml"));
 		}
 
-		void RunTest(string name, string asmPath, string sourcePath)
+		private void RunTest(string name, string asmPath, string sourcePath)
 		{
 			var resolver = new DefaultAssemblyResolver();
 			resolver.RemoveSearchDirectory(".");
@@ -124,7 +125,7 @@ namespace ILSpy.BamlDecompiler.Tests
 			XamlIsEqual(File.ReadAllText(sourcePath), document.ToString());
 		}
 
-		void XamlIsEqual(string input1, string input2)
+		private void XamlIsEqual(string input1, string input2)
 		{
 			var diff = new StringWriter();
 			if (!CodeComparer.Compare(input1, input2, diff, NormalizeLine)) {
@@ -132,12 +133,12 @@ namespace ILSpy.BamlDecompiler.Tests
 			}
 		}
 
-		string NormalizeLine(string line)
+		private string NormalizeLine(string line)
 		{
 			return line.Trim();
 		}
 
-		Stream LoadBaml(Resource res, string name)
+		private Stream LoadBaml(Resource res, string name)
 		{
 			EmbeddedResource er = res as EmbeddedResource;
 			if (er != null) {
@@ -161,6 +162,7 @@ namespace ILSpy.BamlDecompiler.Tests
 
 			return null;
 		}
-		#endregion
+
+		#endregion RunTest
 	}
 }

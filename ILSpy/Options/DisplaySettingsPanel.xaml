@@ -7,8 +7,8 @@
 	</UserControl.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition/>
+			<RowDefinition Height="Auto" />
+			<RowDefinition />
 		</Grid.RowDefinitions>
 		<GroupBox Header="Font">
 			<Grid>

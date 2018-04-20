@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -37,10 +37,10 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	public partial class OpenFromGacDialog : Window
 	{
-		ObservableCollection<GacEntry> gacEntries = new ObservableCollection<GacEntry>();
-		ObservableCollection<GacEntry> filteredEntries = new ObservableCollection<GacEntry>();
-		Predicate<GacEntry> filterMethod = _ => true;
-		volatile bool cancelFetchThread;
+		private ObservableCollection<GacEntry> gacEntries = new ObservableCollection<GacEntry>();
+		private ObservableCollection<GacEntry> filteredEntries = new ObservableCollection<GacEntry>();
+		private Predicate<GacEntry> filterMethod = _ => true;
+		private volatile bool cancelFetchThread;
 
 		public OpenFromGacDialog()
 		{
@@ -59,11 +59,12 @@ namespace ICSharpCode.ILSpy
 		}
 
 		#region Fetch Gac Contents
-		sealed class GacEntry
+
+		private sealed class GacEntry
 		{
-			readonly AssemblyNameReference r;
-			readonly string fileName;
-			string formattedVersion;
+			private readonly AssemblyNameReference r;
+			private readonly string fileName;
+			private string formattedVersion;
 
 			public GacEntry(AssemblyNameReference r, string fileName)
 			{
@@ -114,7 +115,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		void FetchGacContents()
+		private void FetchGacContents()
 		{
 			HashSet<string> fullNames = new HashSet<string>();
 			UpdateProgressBar(pg => { pg.Visibility = System.Windows.Visibility.Visible; pg.IsIndeterminate = true; });
@@ -134,20 +135,21 @@ namespace ICSharpCode.ILSpy
 			UpdateProgressBar(pg => { pg.Visibility = System.Windows.Visibility.Hidden; });
 		}
 
-		void UpdateProgressBar(Action<ProgressBar> updateAction)
+		private void UpdateProgressBar(Action<ProgressBar> updateAction)
 		{
 			Dispatcher.BeginInvoke(DispatcherPriority.Normal, (Action)(() => updateAction(gacReadingProgressBar)));
 		}
 
-		void AddNewEntry(GacEntry entry)
+		private void AddNewEntry(GacEntry entry)
 		{
 			gacEntries.Add(entry);
 			if (filterMethod(entry))
 				filteredEntries.Add(entry);
 		}
-		#endregion
 
-		void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
+		#endregion Fetch Gac Contents
+
+		private void FilterTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			string filterString = filterTextBox.Text.Trim();
 			if (filterString.Length == 0)
@@ -161,17 +163,17 @@ namespace ICSharpCode.ILSpy
 			filteredEntries.AddRange(gacEntries.Where(entry => filterMethod(entry)));
 		}
 
-		static bool Contains(string s, string subString)
+		private static bool Contains(string s, string subString)
 		{
 			return s.IndexOf(subString, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
-		void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			okButton.IsEnabled = listView.SelectedItems.Count > 0;
 		}
 
-		void OKButton_Click(object sender, RoutedEventArgs e)
+		private void OKButton_Click(object sender, RoutedEventArgs e)
 		{
 			this.DialogResult = true;
 			Close();

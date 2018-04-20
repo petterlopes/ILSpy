@@ -8,12 +8,11 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 {
 	internal class XmlBamlNode
 	{
-		public virtual XmlNodeType NodeType
-		{
-			get { return XmlNodeType.None;}
+		public virtual XmlNodeType NodeType {
+			get { return XmlNodeType.None; }
 		}
 	}
 
 	internal class XmlBamlNodeCollection : List<XmlBamlNode>
-	{}
+	{ }
 }

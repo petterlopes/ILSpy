@@ -37,9 +37,11 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 				case "Net_2_0":
 					LoadKnownAssemblies30();
 					break;
+
 				case "Net_4_0":
 					LoadKnownAssemblies40();
 					break;
+
 				default:
 					throw new NotSupportedException();
 			}
@@ -1311,7 +1313,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 			KnownResourceTable.Add(0xa9, new ResourceName("SystemParameters.WorkArea"));
 		}
 
-		void LoadKnownAssemblies30()
+		private void LoadKnownAssemblies30()
 		{
 			KnownAssemblyTable = new string[5];
 			KnownAssemblyTable[0] = "PresentationFramework, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
@@ -1320,8 +1322,8 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 			KnownAssemblyTable[3] = "System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
 			KnownAssemblyTable[4] = "WindowBase, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 		}
-		
-		void LoadKnownAssemblies40()
+
+		private void LoadKnownAssemblies40()
 		{
 			KnownAssemblyTable = new string[5];
 			KnownAssemblyTable[0] = "PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
@@ -1331,7 +1333,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 			KnownAssemblyTable[4] = "WindowBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35";
 		}
 
-		#endregion
+		#endregion Initialize
 
 		public bool IsKnownType(string type)
 		{

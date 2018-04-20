@@ -4,9 +4,8 @@
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
-
-using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.ILSpy;
+using ICSharpCode.ILSpy.TreeNodes;
 
 namespace ILSpy.BamlDecompiler
 {
@@ -17,7 +16,7 @@ namespace ILSpy.BamlDecompiler
 		{
 			return null;
 		}
-		
+
 		public ILSpyTreeNode CreateNode(string key, object data)
 		{
 			if (key.EndsWith(".baml", StringComparison.OrdinalIgnoreCase) && data is Stream)
@@ -31,6 +30,7 @@ namespace ILSpy.BamlDecompiler
 	public sealed class BamlResourceFileHandler : IResourceFileHandler
 	{
 		public string EntryType => "Page";
+
 		public bool CanHandle(string name, DecompilationOptions options) => name.EndsWith(".baml", StringComparison.OrdinalIgnoreCase);
 
 		public string WriteResourceToFile(LoadedAssembly assembly, string fileName, Stream stream, DecompilationOptions options)

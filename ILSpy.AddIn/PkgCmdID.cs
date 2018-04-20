@@ -3,7 +3,7 @@
 
 namespace ICSharpCode.ILSpy.AddIn
 {
-	static class PkgCmdIDList
+	internal static class PkgCmdIDList
 	{
 		public const uint cmdidOpenILSpy = 0x100;
 		public const uint cmdidOpenReferenceInILSpy = 0x200;

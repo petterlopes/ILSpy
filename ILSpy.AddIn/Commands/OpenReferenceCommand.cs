@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using EnvDTE;
 using Microsoft.CodeAnalysis;
@@ -8,9 +7,9 @@ using VSLangProj;
 
 namespace ICSharpCode.ILSpy.AddIn.Commands
 {
-	class OpenReferenceCommand : ILSpyCommand
+	internal class OpenReferenceCommand : ILSpyCommand
 	{
-		static OpenReferenceCommand instance;
+		private static OpenReferenceCommand instance;
 
 		public OpenReferenceCommand(ILSpyAddInPackage owner)
 			: base(owner, PkgCmdIDList.cmdidOpenReferenceInILSpy)

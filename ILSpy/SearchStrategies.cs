@@ -12,7 +12,7 @@ using Code = Mono.Cecil.Cil.Code;
 
 namespace ICSharpCode.ILSpy
 {
-	abstract class AbstractSearchStrategy
+	internal abstract class AbstractSearchStrategy
 	{
 		protected string[] searchTerm;
 		protected Regex regex;
@@ -103,6 +103,7 @@ namespace ICSharpCode.ILSpy
 						if (term.Length > 1 && text.IndexOf(term.Substring(1), StringComparison.OrdinalIgnoreCase) >= 0)
 							return false;
 						break;
+
 					case '=': // exact match
 						{
 							var equalCompareLength = text.IndexOf('`');
@@ -113,6 +114,7 @@ namespace ICSharpCode.ILSpy
 								return false;
 						}
 						break;
+
 					default:
 						if (text.IndexOf(term, StringComparison.OrdinalIgnoreCase) < 0)
 							return false;
@@ -122,25 +124,30 @@ namespace ICSharpCode.ILSpy
 			return true;
 		}
 
-		string GetLanguageSpecificName(Language language, IMemberDefinition member, bool fullName = false)
+		private string GetLanguageSpecificName(Language language, IMemberDefinition member, bool fullName = false)
 		{
 			switch (member) {
 				case TypeDefinition t:
 					return language.TypeToString(t, fullName);
+
 				case FieldDefinition f:
 					return fullName ? language.TypeToString(f.DeclaringType, fullName) + "." + language.FormatFieldName(f) : language.FormatFieldName(f);
+
 				case PropertyDefinition p:
 					return fullName ? language.TypeToString(p.DeclaringType, fullName) + "." + language.FormatPropertyName(p) : language.FormatPropertyName(p);
+
 				case MethodDefinition m:
 					return fullName ? language.TypeToString(m.DeclaringType, fullName) + "." + language.FormatMethodName(m) : language.FormatMethodName(m);
+
 				case EventDefinition e:
 					return fullName ? language.TypeToString(e.DeclaringType, fullName) + "." + language.FormatEventName(e) : language.FormatEventName(e);
+
 				default:
 					throw new NotSupportedException(member?.GetType() + " not supported!");
 			}
 		}
 
-		void Add<T>(Func<IEnumerable<T>> itemsGetter, TypeDefinition type, Language language, Action<SearchResult> addResult, Func<T, Language, bool> matcher, Func<T, ImageSource> image) where T : MemberReference
+		private void Add<T>(Func<IEnumerable<T>> itemsGetter, TypeDefinition type, Language language, Action<SearchResult> addResult, Func<T, Language, bool> matcher, Func<T, ImageSource> image) where T : MemberReference
 		{
 			IEnumerable<T> items = Enumerable.Empty<T>();
 			try {
@@ -174,7 +181,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		bool NotSpecialMethod(MethodDefinition arg)
+		private bool NotSpecialMethod(MethodDefinition arg)
 		{
 			return (arg.SemanticsAttributes & (
 				MethodSemanticsAttributes.Setter
@@ -184,7 +191,7 @@ namespace ICSharpCode.ILSpy
 				| MethodSemanticsAttributes.Fire)) == 0;
 		}
 
-		Regex SafeNewRegex(string unsafePattern)
+		private Regex SafeNewRegex(string unsafePattern)
 		{
 			try {
 				return new Regex(unsafePattern, RegexOptions.Compiled);
@@ -194,9 +201,9 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	class MetadataTokenSearchStrategy : TypeAndMemberSearchStrategy
+	internal class MetadataTokenSearchStrategy : TypeAndMemberSearchStrategy
 	{
-		readonly int searchTermToken;
+		private readonly int searchTermToken;
 
 		public MetadataTokenSearchStrategy(params string[] terms)
 			: base(terms)
@@ -212,10 +219,10 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	class LiteralSearchStrategy : AbstractSearchStrategy
+	internal class LiteralSearchStrategy : AbstractSearchStrategy
 	{
-		readonly TypeCode searchTermLiteralType;
-		readonly object searchTermLiteralValue;
+		private readonly TypeCode searchTermLiteralType;
+		private readonly object searchTermLiteralValue;
 
 		public LiteralSearchStrategy(params string[] terms)
 			: base(terms)
@@ -227,23 +234,24 @@ namespace ICSharpCode.ILSpy
 				if (value != null && value.LiteralValue != null) {
 					TypeCode valueType = Type.GetTypeCode(value.LiteralValue.GetType());
 					switch (valueType) {
-					case TypeCode.Byte:
-					case TypeCode.SByte:
-					case TypeCode.Int16:
-					case TypeCode.UInt16:
-					case TypeCode.Int32:
-					case TypeCode.UInt32:
-					case TypeCode.Int64:
-					case TypeCode.UInt64:
-						searchTermLiteralType = TypeCode.Int64;
-						searchTermLiteralValue = CSharpPrimitiveCast.Cast(TypeCode.Int64, value.LiteralValue, false);
-						break;
-					case TypeCode.Single:
-					case TypeCode.Double:
-					case TypeCode.String:
-						searchTermLiteralType = valueType;
-						searchTermLiteralValue = value.LiteralValue;
-						break;
+						case TypeCode.Byte:
+						case TypeCode.SByte:
+						case TypeCode.Int16:
+						case TypeCode.UInt16:
+						case TypeCode.Int32:
+						case TypeCode.UInt32:
+						case TypeCode.Int64:
+						case TypeCode.UInt64:
+							searchTermLiteralType = TypeCode.Int64;
+							searchTermLiteralValue = CSharpPrimitiveCast.Cast(TypeCode.Int64, value.LiteralValue, false);
+							break;
+
+						case TypeCode.Single:
+						case TypeCode.Double:
+						case TypeCode.String:
+							searchTermLiteralType = valueType;
+							searchTermLiteralValue = value.LiteralValue;
+							break;
 					}
 				}
 			}
@@ -269,7 +277,7 @@ namespace ICSharpCode.ILSpy
 			return MethodIsLiteralMatch(m);
 		}
 
-		bool IsLiteralMatch(object val)
+		private bool IsLiteralMatch(object val)
 		{
 			if (val == null)
 				return false;
@@ -280,17 +288,19 @@ namespace ICSharpCode.ILSpy
 						return CSharpPrimitiveCast.Cast(TypeCode.Int64, val, false).Equals(searchTermLiteralValue);
 					else
 						return false;
+
 				case TypeCode.Single:
 				case TypeCode.Double:
 				case TypeCode.String:
 					return searchTermLiteralValue.Equals(val);
+
 				default:
 					// substring search with searchTerm
 					return IsMatch(t => val.ToString());
 			}
 		}
 
-		bool MethodIsLiteralMatch(MethodDefinition m)
+		private bool MethodIsLiteralMatch(MethodDefinition m)
 		{
 			if (m == null)
 				return false;
@@ -301,74 +311,89 @@ namespace ICSharpCode.ILSpy
 				long val = (long)searchTermLiteralValue;
 				foreach (var inst in body.Instructions) {
 					switch (inst.OpCode.Code) {
-					case Code.Ldc_I8:
-						if (val == (long)inst.Operand)
-							return true;
-						break;
-					case Code.Ldc_I4:
-						if (val == (int)inst.Operand)
-							return true;
-						break;
-					case Code.Ldc_I4_S:
-						if (val == (sbyte)inst.Operand)
-							return true;
-						break;
-					case Code.Ldc_I4_M1:
-						if (val == -1)
-							return true;
-						break;
-					case Code.Ldc_I4_0:
-						if (val == 0)
-							return true;
-						break;
-					case Code.Ldc_I4_1:
-						if (val == 1)
-							return true;
-						break;
-					case Code.Ldc_I4_2:
-						if (val == 2)
-							return true;
-						break;
-					case Code.Ldc_I4_3:
-						if (val == 3)
-							return true;
-						break;
-					case Code.Ldc_I4_4:
-						if (val == 4)
-							return true;
-						break;
-					case Code.Ldc_I4_5:
-						if (val == 5)
-							return true;
-						break;
-					case Code.Ldc_I4_6:
-						if (val == 6)
-							return true;
-						break;
-					case Code.Ldc_I4_7:
-						if (val == 7)
-							return true;
-						break;
-					case Code.Ldc_I4_8:
-						if (val == 8)
-							return true;
-						break;
+						case Code.Ldc_I8:
+							if (val == (long)inst.Operand)
+								return true;
+							break;
+
+						case Code.Ldc_I4:
+							if (val == (int)inst.Operand)
+								return true;
+							break;
+
+						case Code.Ldc_I4_S:
+							if (val == (sbyte)inst.Operand)
+								return true;
+							break;
+
+						case Code.Ldc_I4_M1:
+							if (val == -1)
+								return true;
+							break;
+
+						case Code.Ldc_I4_0:
+							if (val == 0)
+								return true;
+							break;
+
+						case Code.Ldc_I4_1:
+							if (val == 1)
+								return true;
+							break;
+
+						case Code.Ldc_I4_2:
+							if (val == 2)
+								return true;
+							break;
+
+						case Code.Ldc_I4_3:
+							if (val == 3)
+								return true;
+							break;
+
+						case Code.Ldc_I4_4:
+							if (val == 4)
+								return true;
+							break;
+
+						case Code.Ldc_I4_5:
+							if (val == 5)
+								return true;
+							break;
+
+						case Code.Ldc_I4_6:
+							if (val == 6)
+								return true;
+							break;
+
+						case Code.Ldc_I4_7:
+							if (val == 7)
+								return true;
+							break;
+
+						case Code.Ldc_I4_8:
+							if (val == 8)
+								return true;
+							break;
 					}
 				}
 			} else if (searchTermLiteralType != TypeCode.Empty) {
 				Code expectedCode;
 				switch (searchTermLiteralType) {
-				case TypeCode.Single:
-					expectedCode = Code.Ldc_R4;
-					break;
-				case TypeCode.Double:
-					expectedCode = Code.Ldc_R8;
-					break;
-				case TypeCode.String:
-					expectedCode = Code.Ldstr;
-					break;
-				default:
-					throw new InvalidOperationException();
+					case TypeCode.Single:
+						expectedCode = Code.Ldc_R4;
+						break;
+
+					case TypeCode.Double:
+						expectedCode = Code.Ldc_R8;
+						break;
+
+					case TypeCode.String:
+						expectedCode = Code.Ldstr;
+						break;
+
+					default:
+						throw new InvalidOperationException();
 				}
 				foreach (var inst in body.Instructions) {
 					if (inst.OpCode.Code == expectedCode && searchTermLiteralValue.Equals(inst.Operand))
@@ -384,7 +409,7 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	enum MemberSearchKind
+	internal enum MemberSearchKind
 	{
 		All,
 		Field,
@@ -393,9 +418,9 @@ namespace ICSharpCode.ILSpy
 		Method
 	}
 
-	class MemberSearchStrategy : AbstractSearchStrategy
+	internal class MemberSearchStrategy : AbstractSearchStrategy
 	{
-		MemberSearchKind searchKind;
+		private MemberSearchKind searchKind;
 
 		public MemberSearchStrategy(string term, MemberSearchKind searchKind = MemberSearchKind.All)
 			: this(new[] { term }, searchKind)
@@ -429,7 +454,7 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	class TypeSearchStrategy : AbstractSearchStrategy
+	internal class TypeSearchStrategy : AbstractSearchStrategy
 	{
 		public TypeSearchStrategy(params string[] terms)
 			: base(terms)
@@ -456,7 +481,7 @@ namespace ICSharpCode.ILSpy
 		}
 	}
 
-	class TypeAndMemberSearchStrategy : AbstractSearchStrategy
+	internal class TypeAndMemberSearchStrategy : AbstractSearchStrategy
 	{
 		public TypeAndMemberSearchStrategy(params string[] terms)
 			: base(terms)
@@ -465,11 +490,9 @@ namespace ICSharpCode.ILSpy
 
 		public override void Search(TypeDefinition type, Language language, Action<SearchResult> addResult)
 		{
-			if (MatchName(type, language))
-			{
+			if (MatchName(type, language)) {
 				string name = language.TypeToString(type, includeNamespace: false);
-				addResult(new SearchResult
-				{
+				addResult(new SearchResult {
 					Member = type,
 					Image = TypeTreeNode.GetIcon(type),
 					Fitness = CalculateFitness(type),

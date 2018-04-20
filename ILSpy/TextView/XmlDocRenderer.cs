@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -31,13 +31,13 @@ namespace ICSharpCode.ILSpy.TextView
 	/// </summary>
 	public class XmlDocRenderer
 	{
-		readonly StringBuilder ret = new StringBuilder();
-		
+		private readonly StringBuilder ret = new StringBuilder();
+
 		public void AppendText(string text)
 		{
 			ret.Append(text);
 		}
-		
+
 		public void AddXmlDocumentation(string xmlDocumentation)
 		{
 			if (xmlDocumentation == null)
@@ -50,9 +50,9 @@ namespace ICSharpCode.ILSpy.TextView
 			} catch (XmlException) {
 			}
 		}
-		
-		static readonly Regex whitespace = new Regex(@"\s+");
-		
+
+		private static readonly Regex whitespace = new Regex(@"\s+");
+
 		public void AddXmlDocumentation(XmlReader xml)
 		{
 			while (xml.Read()) {
@@ -63,47 +63,57 @@ namespace ICSharpCode.ILSpy.TextView
 						case "remarks":
 							xml.Skip();
 							break;
+
 						case "example":
 							ret.Append(Environment.NewLine);
 							ret.Append("Example:");
 							ret.Append(Environment.NewLine);
 							break;
+
 						case "exception":
 							ret.Append(Environment.NewLine);
 							ret.Append(GetCref(xml["cref"]));
 							ret.Append(": ");
 							break;
+
 						case "returns":
 							ret.Append(Environment.NewLine);
 							ret.Append("Returns: ");
 							break;
+
 						case "see":
 							ret.Append(GetCref(xml["cref"]));
 							ret.Append(xml["langword"]);
 							break;
+
 						case "seealso":
 							ret.Append(Environment.NewLine);
 							ret.Append("See also: ");
 							ret.Append(GetCref(xml["cref"]));
 							break;
+
 						case "paramref":
 							ret.Append(xml["name"]);
 							break;
+
 						case "param":
 							ret.Append(Environment.NewLine);
-							ret.Append(whitespace.Replace(xml["name"].Trim()," "));
+							ret.Append(whitespace.Replace(xml["name"].Trim(), " "));
 							ret.Append(": ");
 							break;
+
 						case "typeparam":
 							ret.Append(Environment.NewLine);
-							ret.Append(whitespace.Replace(xml["name"].Trim()," "));
+							ret.Append(whitespace.Replace(xml["name"].Trim(), " "));
 							ret.Append(": ");
 							break;
+
 						case "value":
 							ret.Append(Environment.NewLine);
 							ret.Append("Value: ");
 							ret.Append(Environment.NewLine);
 							break;
+
 						case "br":
 						case "para":
 							ret.Append(Environment.NewLine);
@@ -114,10 +124,10 @@ namespace ICSharpCode.ILSpy.TextView
 				}
 			}
 		}
-		
-		static string GetCref(string cref)
+
+		private static string GetCref(string cref)
 		{
-			if (cref == null || cref.Trim().Length==0) {
+			if (cref == null || cref.Trim().Length == 0) {
 				return "";
 			}
 			if (cref.Length < 2) {
@@ -128,7 +138,7 @@ namespace ICSharpCode.ILSpy.TextView
 			}
 			return cref;
 		}
-		
+
 		public TextBlock CreateTextBlock()
 		{
 			return new TextBlock { Text = ret.ToString() };

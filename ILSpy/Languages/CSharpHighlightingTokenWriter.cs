@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Decompiler.CSharp;
@@ -9,43 +8,43 @@ using ICSharpCode.Decompiler.TypeSystem;
 
 namespace ICSharpCode.ILSpy
 {
-	class CSharpHighlightingTokenWriter : DecoratingTokenWriter
+	internal class CSharpHighlightingTokenWriter : DecoratingTokenWriter
 	{
-		ISmartTextOutput textOutput;
+		private ISmartTextOutput textOutput;
 
-		HighlightingColor visibilityKeywordsColor;
-		HighlightingColor namespaceKeywordsColor;
-		HighlightingColor structureKeywordsColor;
-		HighlightingColor gotoKeywordsColor;
-		HighlightingColor queryKeywordsColor;
-		HighlightingColor exceptionKeywordsColor;
-		HighlightingColor checkedKeywordColor;
-		HighlightingColor unsafeKeywordsColor;
-		HighlightingColor valueTypeKeywordsColor;
-		HighlightingColor referenceTypeKeywordsColor;
-		HighlightingColor operatorKeywordsColor;
-		HighlightingColor parameterModifierColor;
-		HighlightingColor modifiersColor;
-		HighlightingColor accessorKeywordsColor;
-		HighlightingColor attributeKeywordsColor;
+		private HighlightingColor visibilityKeywordsColor;
+		private HighlightingColor namespaceKeywordsColor;
+		private HighlightingColor structureKeywordsColor;
+		private HighlightingColor gotoKeywordsColor;
+		private HighlightingColor queryKeywordsColor;
+		private HighlightingColor exceptionKeywordsColor;
+		private HighlightingColor checkedKeywordColor;
+		private HighlightingColor unsafeKeywordsColor;
+		private HighlightingColor valueTypeKeywordsColor;
+		private HighlightingColor referenceTypeKeywordsColor;
+		private HighlightingColor operatorKeywordsColor;
+		private HighlightingColor parameterModifierColor;
+		private HighlightingColor modifiersColor;
+		private HighlightingColor accessorKeywordsColor;
+		private HighlightingColor attributeKeywordsColor;
 
-		HighlightingColor referenceTypeColor;
-		HighlightingColor valueTypeColor;
-		HighlightingColor interfaceTypeColor;
-		HighlightingColor enumerationTypeColor;
-		HighlightingColor typeParameterTypeColor;
-		HighlightingColor delegateTypeColor;
+		private HighlightingColor referenceTypeColor;
+		private HighlightingColor valueTypeColor;
+		private HighlightingColor interfaceTypeColor;
+		private HighlightingColor enumerationTypeColor;
+		private HighlightingColor typeParameterTypeColor;
+		private HighlightingColor delegateTypeColor;
 
-		HighlightingColor methodCallColor;
-		HighlightingColor methodDeclarationColor;
+		private HighlightingColor methodCallColor;
+		private HighlightingColor methodDeclarationColor;
 
-		HighlightingColor fieldDeclarationColor;
-		HighlightingColor fieldAccessColor;
+		private HighlightingColor fieldDeclarationColor;
+		private HighlightingColor fieldAccessColor;
 
-		HighlightingColor valueKeywordColor;
-		HighlightingColor thisKeywordColor;
-		HighlightingColor trueKeywordColor;
-		HighlightingColor typeKeywordsColor;
+		private HighlightingColor valueKeywordColor;
+		private HighlightingColor thisKeywordColor;
+		private HighlightingColor trueKeywordColor;
+		private HighlightingColor typeKeywordsColor;
 
 		public CSharpHighlightingTokenWriter(TokenWriter decoratedWriter, ISmartTextOutput textOutput) : base(decoratedWriter)
 		{
@@ -100,20 +99,24 @@ namespace ICSharpCode.ILSpy
 					else
 						color = namespaceKeywordsColor;
 					break;
+
 				case "this":
 				case "base":
 					color = thisKeywordColor;
 					break;
+
 				case "true":
 				case "false":
 					color = trueKeywordColor;
 					break;
+
 				case "public":
 				case "internal":
 				case "protected":
 				case "private":
 					color = visibilityKeywordsColor;
 					break;
+
 				case "if":
 				case "else":
 				case "switch":
@@ -129,12 +132,14 @@ namespace ICSharpCode.ILSpy
 				case "await":
 					color = structureKeywordsColor;
 					break;
+
 				case "where":
 					if (nodeStack.PeekOrDefault() is QueryClause)
 						color = queryKeywordsColor;
 					else
 						color = structureKeywordsColor;
 					break;
+
 				case "in":
 					if (nodeStack.PeekOrDefault() is ForeachStatement)
 						color = structureKeywordsColor;
@@ -143,6 +148,7 @@ namespace ICSharpCode.ILSpy
 					else
 						color = parameterModifierColor;
 					break;
+
 				case "as":
 				case "is":
 				case "new":
@@ -152,16 +158,19 @@ namespace ICSharpCode.ILSpy
 				case "stackalloc":
 					color = typeKeywordsColor;
 					break;
+
 				case "try":
 				case "throw":
 				case "catch":
 				case "finally":
 					color = exceptionKeywordsColor;
 					break;
+
 				case "when":
 					if (role == CatchClause.WhenKeywordRole)
 						color = exceptionKeywordsColor;
 					break;
+
 				case "get":
 				case "set":
 				case "add":
@@ -172,6 +181,7 @@ namespace ICSharpCode.ILSpy
 						role == CustomEventDeclaration.RemoveKeywordRole)
 						color = accessorKeywordsColor;
 					break;
+
 				case "abstract":
 				case "const":
 				case "event":
@@ -186,23 +196,28 @@ namespace ICSharpCode.ILSpy
 				case "partial":
 					color = modifiersColor;
 					break;
+
 				case "checked":
 				case "unchecked":
 					color = checkedKeywordColor;
 					break;
+
 				case "fixed":
 				case "unsafe":
 					color = unsafeKeywordsColor;
 					break;
+
 				case "enum":
 				case "struct":
 					color = valueTypeKeywordsColor;
 					break;
+
 				case "class":
 				case "interface":
 				case "delegate":
 					color = referenceTypeKeywordsColor;
 					break;
+
 				case "select":
 				case "group":
 				case "by":
@@ -218,16 +233,19 @@ namespace ICSharpCode.ILSpy
 					if (nodeStack.PeekOrDefault() is QueryClause)
 						color = queryKeywordsColor;
 					break;
+
 				case "explicit":
 				case "implicit":
 				case "operator":
 					color = operatorKeywordsColor;
 					break;
+
 				case "params":
 				case "ref":
 				case "out":
 					color = parameterModifierColor;
 					break;
+
 				case "break":
 				case "continue":
 				case "goto":
@@ -254,6 +272,7 @@ namespace ICSharpCode.ILSpy
 				case "new":
 					color = typeKeywordsColor;
 					break;
+
 				case "bool":
 				case "byte":
 				case "char":
@@ -271,6 +290,7 @@ namespace ICSharpCode.ILSpy
 				case "ulong":
 					color = valueTypeKeywordsColor;
 					break;
+
 				case "object":
 				case "string":
 				case "void":
@@ -297,23 +317,29 @@ namespace ICSharpCode.ILSpy
 						case TypeKind.Delegate:
 							color = delegateTypeColor;
 							break;
+
 						case TypeKind.Class:
 							color = referenceTypeColor;
 							break;
+
 						case TypeKind.Interface:
 							color = interfaceTypeColor;
 							break;
+
 						case TypeKind.Enum:
 							color = enumerationTypeColor;
 							break;
+
 						case TypeKind.Struct:
 							color = valueTypeColor;
 							break;
 					}
 					break;
+
 				case IMethod m:
 					color = methodDeclarationColor;
 					break;
+
 				case IField f:
 					color = fieldDeclarationColor;
 					break;
@@ -324,23 +350,29 @@ namespace ICSharpCode.ILSpy
 						case TypeKind.Delegate:
 							color = delegateTypeColor;
 							break;
+
 						case TypeKind.Class:
 							color = referenceTypeColor;
 							break;
+
 						case TypeKind.Interface:
 							color = interfaceTypeColor;
 							break;
+
 						case TypeKind.Enum:
 							color = enumerationTypeColor;
 							break;
+
 						case TypeKind.Struct:
 							color = valueTypeColor;
 							break;
 					}
 					break;
+
 				case IMethod m:
 					color = methodCallColor;
 					break;
+
 				case IField f:
 					color = fieldAccessColor;
 					break;
@@ -372,7 +404,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		ISymbol GetCurrentDefinition()
+		private ISymbol GetCurrentDefinition()
 		{
 			if (nodeStack == null || nodeStack.Count == 0)
 				return null;
@@ -386,7 +418,7 @@ namespace ICSharpCode.ILSpy
 			return null;
 		}
 
-		static bool IsDefinition(ref AstNode node)
+		private static bool IsDefinition(ref AstNode node)
 		{
 			if (node is EntityDeclaration)
 				return true;
@@ -399,7 +431,7 @@ namespace ICSharpCode.ILSpy
 			return false;
 		}
 
-		ISymbol GetCurrentMemberReference()
+		private ISymbol GetCurrentMemberReference()
 		{
 			AstNode node = nodeStack.Peek();
 			var symbol = node.GetSymbol();
@@ -417,7 +449,7 @@ namespace ICSharpCode.ILSpy
 			return symbol;
 		}
 
-		Stack<AstNode> nodeStack = new Stack<AstNode>();
+		private Stack<AstNode> nodeStack = new Stack<AstNode>();
 
 		public override void StartNode(AstNode node)
 		{

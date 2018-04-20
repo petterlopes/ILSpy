@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using ICSharpCode.Decompiler;
@@ -33,12 +32,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// Represents a list of assemblies.
 	/// This is used as (invisible) root node of the tree view.
 	/// </summary>
-	sealed class AssemblyListTreeNode : ILSpyTreeNode
+	internal sealed class AssemblyListTreeNode : ILSpyTreeNode
 	{
-		readonly AssemblyList assemblyList;
+		private readonly AssemblyList assemblyList;
 
-		public AssemblyList AssemblyList
-		{
+		public AssemblyList AssemblyList {
 			get { return assemblyList; }
 		}
 
@@ -50,23 +48,24 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			BindToObservableCollection(assemblyList.assemblies);
 		}
 
-		public override object Text
-		{
+		public override object Text {
 			get { return assemblyList.ListName; }
 		}
 
-		void BindToObservableCollection(ObservableCollection<LoadedAssembly> collection)
+		private void BindToObservableCollection(ObservableCollection<LoadedAssembly> collection)
 		{
 			this.Children.Clear();
 			this.Children.AddRange(collection.Select(a => new AssemblyTreeNode(a)));
-			collection.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs e) {
+			collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
 				switch (e.Action) {
 					case NotifyCollectionChangedAction.Add:
 						this.Children.InsertRange(e.NewStartingIndex, e.NewItems.Cast<LoadedAssembly>().Select(a => new AssemblyTreeNode(a)));
 						break;
+
 					case NotifyCollectionChangedAction.Remove:
 						this.Children.RemoveRange(e.OldStartingIndex, e.OldItems.Count);
 						break;
+
 					case NotifyCollectionChangedAction.Replace:
 					case NotifyCollectionChangedAction.Move:
 						throw new NotImplementedException();
@@ -74,6 +73,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 						this.Children.Clear();
 						this.Children.AddRange(collection.Select(a => new AssemblyTreeNode(a)));
 						break;
+
 					default:
 						throw new NotSupportedException("Invalid value for NotifyCollectionChangedAction");
 				}
@@ -158,13 +158,10 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		{
 			if (resource == null)
 				return null;
-			foreach (AssemblyTreeNode node in this.Children)
-			{
-				if (node.LoadedAssembly.IsLoaded)
-				{
+			foreach (AssemblyTreeNode node in this.Children) {
+				if (node.LoadedAssembly.IsLoaded) {
 					node.EnsureLazyChildren();
-					foreach (var item in node.Children.OfType<ResourceListTreeNode>())
-					{
+					foreach (var item in node.Children.OfType<ResourceListTreeNode>()) {
 						var founded = item.Children.OfType<ResourceTreeNode>().Where(x => x.Resource == resource).FirstOrDefault();
 						if (founded != null)
 							return founded;
@@ -177,7 +174,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			}
 			return null;
 		}
-
 
 		public AssemblyTreeNode FindAssemblyNode(ModuleDefinition module)
 		{
@@ -319,6 +315,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			typeNode.EnsureLazyChildren();
 			return typeNode.Children.OfType<EventTreeNode>().FirstOrDefault(m => m.EventDefinition == def && !m.IsHidden);
 		}
-		#endregion
+
+		#endregion Find*Node
 	}
 }

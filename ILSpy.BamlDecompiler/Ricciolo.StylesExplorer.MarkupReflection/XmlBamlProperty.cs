@@ -8,7 +8,7 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 {
 	internal class XmlBamlProperty : XmlBamlNode
 	{
-		PropertyType propertyType;
+		private PropertyType propertyType;
 
 		public XmlBamlProperty(XmlBamlElement parent, PropertyType propertyType)
 		{
@@ -27,9 +27,9 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 		{
 			return this.PropertyDeclaration.Name;
 		}
-		
+
 		public XmlBamlElement Parent { get; set; }
-		
+
 		public PropertyDeclaration PropertyDeclaration { get; set; }
 
 		public PropertyType PropertyType {

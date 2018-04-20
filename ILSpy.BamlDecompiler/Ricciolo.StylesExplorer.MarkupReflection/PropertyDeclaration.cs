@@ -1,7 +1,6 @@
 // Copyright (c) Cristian Civera (cristian@aspitalia.com)
 // This code is distributed under the MS-PL (for details please see \doc\MS-PL.txt)
 
-
 namespace Ricciolo.StylesExplorer.MarkupReflection
 {
 	internal class PropertyDeclaration
@@ -24,10 +23,8 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 
 		public override string ToString()
 		{
-			if (((this.DeclaringType != null) && (this.DeclaringType.Name == "XmlNamespace")) && ((this.DeclaringType.Namespace == null) && (this.DeclaringType.Assembly == null)))
-			{
-				if ((this.Name == null) || (this.Name.Length == 0))
-				{
+			if (((this.DeclaringType != null) && (this.DeclaringType.Name == "XmlNamespace")) && ((this.DeclaringType.Namespace == null) && (this.DeclaringType.Assembly == null))) {
+				if ((this.Name == null) || (this.Name.Length == 0)) {
 					return "xmlns";
 				}
 				return ("xmlns:" + this.Name);
@@ -36,18 +33,14 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 		}
 
 		// Properties
-		public TypeDeclaration DeclaringType
-		{
-			get
-			{
+		public TypeDeclaration DeclaringType {
+			get {
 				return this.declaringType;
 			}
 		}
 
-		public string Name
-		{
-			get
-			{
+		public string Name {
+			get {
 				return this.name;
 			}
 		}

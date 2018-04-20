@@ -1,15 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.Shell;
 
 namespace ICSharpCode.ILSpy.AddIn.Commands
 {
-	class OpenCodeItemCommand : ILSpyCommand
+	internal class OpenCodeItemCommand : ILSpyCommand
 	{
-		static OpenCodeItemCommand instance;
+		private static OpenCodeItemCommand instance;
 
 		public OpenCodeItemCommand(ILSpyAddInPackage owner)
 			: base(owner, PkgCmdIDList.cmdidOpenCodeItemInILSpy)

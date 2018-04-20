@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -23,17 +23,16 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Resources;
-
+using System.Windows;
+using System.Windows.Controls;
 using ICSharpCode.Decompiler;
-using Mono.Cecil;
 using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using ICSharpCode.Decompiler.CSharp.Syntax;
-using ICSharpCode.Decompiler.TypeSystem;
-using System.Windows;
-using System.Windows.Controls;
-using ICSharpCode.ILSpy.TreeNodes;
 using ICSharpCode.Decompiler.CSharp.Transforms;
+using ICSharpCode.Decompiler.TypeSystem;
+using ICSharpCode.ILSpy.TreeNodes;
+using Mono.Cecil;
 
 namespace ICSharpCode.ILSpy
 {
@@ -45,11 +44,12 @@ namespace ICSharpCode.ILSpy
 	[Export(typeof(Language))]
 	public class CSharpLanguage : Language
 	{
-		string name = "C#";
-		bool showAllMembers = false;
-		int transformCount = int.MaxValue;
+		private string name = "C#";
+		private bool showAllMembers = false;
+		private int transformCount = int.MaxValue;
 
 #if DEBUG
+
 		internal static IEnumerable<CSharpLanguage> GetDebugLanguages()
 		{
 			var decompiler = new CSharpDecompiler(ModuleDefinition.CreateModule("Dummy", ModuleKind.Dll), new DecompilerSettings());
@@ -69,6 +69,7 @@ namespace ICSharpCode.ILSpy
 				showAllMembers = true
 			};
 		}
+
 #endif
 
 		public override string Name {
@@ -83,7 +84,7 @@ namespace ICSharpCode.ILSpy
 			get { return ".csproj"; }
 		}
 
-		IReadOnlyList<LanguageVersion> versions;
+		private IReadOnlyList<LanguageVersion> versions;
 
 		public override IReadOnlyList<LanguageVersion> LanguageVersions {
 			get {
@@ -104,7 +105,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		CSharpDecompiler CreateDecompiler(ModuleDefinition module, DecompilationOptions options)
+		private CSharpDecompiler CreateDecompiler(ModuleDefinition module, DecompilationOptions options)
 		{
 			CSharpDecompiler decompiler = new CSharpDecompiler(module, options.DecompilerSettings);
 			decompiler.CancellationToken = options.CancellationToken;
@@ -113,7 +114,7 @@ namespace ICSharpCode.ILSpy
 			return decompiler;
 		}
 
-		void WriteCode(ITextOutput output, DecompilerSettings settings, SyntaxTree syntaxTree, IDecompilerTypeSystem typeSystem)
+		private void WriteCode(ITextOutput output, DecompilerSettings settings, SyntaxTree syntaxTree, IDecompilerTypeSystem typeSystem)
 		{
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			TokenWriter tokenWriter = new TextTokenWriter(output, settings, typeSystem) { FoldBraces = settings.FoldBraces, ExpandMemberDefinitions = settings.ExpandMemberDefinitions };
@@ -137,10 +138,10 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		class SelectCtorTransform : IAstTransform
+		private class SelectCtorTransform : IAstTransform
 		{
-			readonly IMethod ctor;
-			readonly HashSet<ISymbol> removedSymbols = new HashSet<ISymbol>();
+			private readonly IMethod ctor;
+			private readonly HashSet<ISymbol> removedSymbols = new HashSet<ISymbol>();
 
 			public SelectCtorTransform(IMethod ctor)
 			{
@@ -161,6 +162,7 @@ namespace ICSharpCode.ILSpy
 								removedSymbols.Add(ctor.GetSymbol());
 							}
 							break;
+
 						case FieldDeclaration fd:
 							// Remove any fields without initializers
 							if (fd.Variables.All(v => v.Initializer.IsNull)) {
@@ -228,9 +230,9 @@ namespace ICSharpCode.ILSpy
 		/// <summary>
 		/// Removes all top-level members except for the specified fields.
 		/// </summary>
-		sealed class SelectFieldTransform : IAstTransform
+		private sealed class SelectFieldTransform : IAstTransform
 		{
-			readonly IField field;
+			private readonly IField field;
 
 			public SelectFieldTransform(IField field)
 			{
@@ -245,6 +247,7 @@ namespace ICSharpCode.ILSpy
 							if (node.GetSymbol() != field)
 								node.Remove();
 							break;
+
 						case Comment c:
 							if (c.GetSymbol() != field)
 								node.Remove();
@@ -280,10 +283,13 @@ namespace ICSharpCode.ILSpy
 						return "x86";
 					else
 						return "AnyCPU (64-bit preferred)";
+
 				case TargetArchitecture.AMD64:
 					return "x64";
+
 				case TargetArchitecture.IA64:
 					return "Itanium";
+
 				default:
 					return module.Architecture.ToString();
 			}
@@ -294,17 +300,20 @@ namespace ICSharpCode.ILSpy
 			switch (module.Runtime) {
 				case TargetRuntime.Net_1_0:
 					return ".NET 1.0";
+
 				case TargetRuntime.Net_1_1:
 					return ".NET 1.1";
+
 				case TargetRuntime.Net_2_0:
 					return ".NET 2.0";
+
 				case TargetRuntime.Net_4_0:
 					return ".NET 4.0";
 			}
 			return null;
 		}
 
-		void AddReferenceWarningMessage(AssemblyDefinition assembly, ITextOutput output)
+		private void AddReferenceWarningMessage(AssemblyDefinition assembly, ITextOutput output)
 		{
 			var loadedAssembly = MainWindow.Instance.CurrentAssemblyList.GetAssemblies().FirstOrDefault(la => la.GetAssemblyDefinitionOrNull() == assembly);
 			if (loadedAssembly == null || !loadedAssembly.LoadedAssemblyReferencesInfo.HasErrors)
@@ -384,10 +393,10 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		class ILSpyWholeProjectDecompiler : WholeProjectDecompiler
+		private class ILSpyWholeProjectDecompiler : WholeProjectDecompiler
 		{
-			readonly LoadedAssembly assembly;
-			readonly DecompilationOptions options;
+			private readonly LoadedAssembly assembly;
+			private readonly DecompilationOptions options;
 
 			public ILSpyWholeProjectDecompiler(LoadedAssembly assembly, DecompilationOptions options)
 			{
@@ -427,7 +436,7 @@ namespace ICSharpCode.ILSpy
 			return TypeToString(options, type, typeAttributes);
 		}
 
-		string TypeToString(ConvertTypeOptions options, TypeReference type, ICustomAttributeProvider typeAttributes = null)
+		private string TypeToString(ConvertTypeOptions options, TypeReference type, ICustomAttributeProvider typeAttributes = null)
 		{
 			AstType astType = CSharpDecompiler.ConvertType(type, typeAttributes, options);
 
@@ -447,7 +456,7 @@ namespace ICSharpCode.ILSpy
 			return w.ToString();
 		}
 
-		static readonly CSharpFormattingOptions TypeToStringFormattingOptions = FormattingOptionsFactory.CreateEmpty();
+		private static readonly CSharpFormattingOptions TypeToStringFormattingOptions = FormattingOptionsFactory.CreateEmpty();
 
 		public override string FormatPropertyName(PropertyDefinition property, bool? isIndexer)
 		{
@@ -518,18 +527,22 @@ namespace ICSharpCode.ILSpy
 					symbol = decompilerTypeSystem.Resolve(mr);
 					if (symbol == null) return base.GetTooltip(member);
 					break;
+
 				case PropertyReference pr:
 					symbol = decompilerTypeSystem.Resolve(pr);
 					if (symbol == null) return base.GetTooltip(member);
 					break;
+
 				case EventReference er:
 					symbol = decompilerTypeSystem.Resolve(er);
 					if (symbol == null) return base.GetTooltip(member);
 					break;
+
 				case FieldReference fr:
 					symbol = decompilerTypeSystem.Resolve(fr);
 					if (symbol == null) return base.GetTooltip(member);
 					break;
+
 				default:
 					return base.GetTooltip(member);
 			}

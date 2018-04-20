@@ -7,13 +7,12 @@ using ICSharpCode.Decompiler.IL.Transforms;
 
 namespace ICSharpCode.ILSpy
 {
-
 	/// <summary>
 	/// Interaktionslogik für DebugSteps.xaml
 	/// </summary>
 	public partial class DebugSteps : UserControl, IPane
 	{
-		static readonly ILAstWritingOptions writingOptions = new ILAstWritingOptions {
+		private static readonly ILAstWritingOptions writingOptions = new ILAstWritingOptions {
 			UseFieldSugar = true,
 			UseLogicOperationSugar = true
 		};
@@ -21,10 +20,10 @@ namespace ICSharpCode.ILSpy
 		public static ILAstWritingOptions Options => writingOptions;
 
 #if DEBUG
-		ILAstLanguage language;
+		private ILAstLanguage language;
 #endif
 
-		DebugSteps()
+		private DebugSteps()
 		{
 			InitializeComponent();
 
@@ -119,9 +118,9 @@ namespace ICSharpCode.ILSpy
 			DecompileAsync(n.BeginStep, true);
 		}
 
-		int lastSelectedStep = int.MaxValue;
+		private int lastSelectedStep = int.MaxValue;
 
-		void DecompileAsync(int step, bool isDebug = false)
+		private void DecompileAsync(int step, bool isDebug = false)
 		{
 			lastSelectedStep = step;
 			var window = MainWindow.Instance;

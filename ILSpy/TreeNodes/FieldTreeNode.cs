@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -37,8 +37,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.FieldDefinition = field;
 		}
 
-		public override object Text
-		{
+		public override object Text {
 			get {
 				return HighlightSearchMatch(
 					FieldDefinition.Name,
@@ -86,18 +85,25 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			switch (fieldAttributes & FieldAttributes.FieldAccessMask) {
 				case FieldAttributes.Public:
 					return AccessOverlayIcon.Public;
+
 				case FieldAttributes.Assembly:
 					return AccessOverlayIcon.Internal;
+
 				case FieldAttributes.FamANDAssem:
 					return AccessOverlayIcon.PrivateProtected;
+
 				case FieldAttributes.Family:
 					return AccessOverlayIcon.Protected;
+
 				case FieldAttributes.FamORAssem:
 					return AccessOverlayIcon.ProtectedInternal;
+
 				case FieldAttributes.Private:
 					return AccessOverlayIcon.Private;
+
 				case FieldAttributes.CompilerControlled:
 					return AccessOverlayIcon.CompilerControlled;
+
 				default:
 					throw new NotSupportedException();
 			}
@@ -117,7 +123,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 		{
 			language.DecompileField(FieldDefinition, output, options);
 		}
-		
+
 		public override bool IsPublicAPI {
 			get {
 				return FieldDefinition.IsPublic || FieldDefinition.IsFamily || FieldDefinition.IsFamilyOrAssembly;

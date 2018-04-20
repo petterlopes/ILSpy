@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -17,9 +17,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Linq;
 using System.Text;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 using ICSharpCode.Decompiler;
@@ -103,18 +101,25 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			switch (methodAttributes & MethodAttributes.MemberAccessMask) {
 				case MethodAttributes.Public:
 					return AccessOverlayIcon.Public;
+
 				case MethodAttributes.Assembly:
 					return AccessOverlayIcon.Internal;
+
 				case MethodAttributes.FamANDAssem:
 					return AccessOverlayIcon.PrivateProtected;
+
 				case MethodAttributes.Family:
 					return AccessOverlayIcon.Protected;
+
 				case MethodAttributes.FamORAssem:
 					return AccessOverlayIcon.ProtectedInternal;
+
 				case MethodAttributes.Private:
 					return AccessOverlayIcon.Private;
+
 				case MethodAttributes.CompilerControlled:
 					return AccessOverlayIcon.CompilerControlled;
+
 				default:
 					throw new NotSupportedException();
 			}

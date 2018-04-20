@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -28,7 +28,6 @@ namespace ICSharpCode.ILSpy.TreeNodes
 {
 	public sealed class TypeTreeNode : ILSpyTreeNode, IMemberTreeNode
 	{
-		
 		public TypeTreeNode(TypeDefinition type, AssemblyTreeNode parentAssemblyNode)
 		{
 			if (parentAssemblyNode == null)
@@ -54,12 +53,13 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					case TypeAttributes.NestedFamily:
 					case TypeAttributes.NestedFamORAssem:
 						return true;
+
 					default:
 						return false;
 				}
 			}
 		}
-		
+
 		public override FilterResult Filter(FilterSettings settings)
 		{
 			if (!settings.ShowInternalApi && !IsPublicAPI)
@@ -73,7 +73,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				return FilterResult.Recurse;
 			}
 		}
-		
+
 		protected override void LoadChildren()
 		{
 			if (TypeDefinition.BaseType != null || TypeDefinition.HasInterfaces)
@@ -86,7 +86,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			foreach (FieldDefinition field in TypeDefinition.Fields.OrderBy(m => m.Name, NaturalStringComparer.Instance)) {
 				this.Children.Add(new FieldTreeNode(field));
 			}
-			
+
 			foreach (PropertyDefinition property in TypeDefinition.Properties.OrderBy(m => m.Name, NaturalStringComparer.Instance)) {
 				this.Children.Add(new PropertyTreeNode(property));
 			}
@@ -118,7 +118,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			return Images.GetIcon(typeIcon, overlayIcon);
 		}
 
-		static TypeIcon GetTypeIcon(TypeDefinition type)
+		private static TypeIcon GetTypeIcon(TypeDefinition type)
 		{
 			if (type.IsValueType) {
 				if (type.IsEnum)
@@ -145,20 +145,25 @@ namespace ICSharpCode.ILSpy.TreeNodes
 				case TypeAttributes.NestedPublic:
 					overlay = AccessOverlayIcon.Public;
 					break;
+
 				case TypeAttributes.NotPublic:
 				case TypeAttributes.NestedAssembly:
 					overlay = AccessOverlayIcon.Internal;
 					break;
+
 				case TypeAttributes.NestedFamANDAssem:
 					overlay = AccessOverlayIcon.PrivateProtected;
 					break;
+
 				case TypeAttributes.NestedFamily:
 				case TypeAttributes.NestedFamORAssem:
 					overlay = AccessOverlayIcon.Protected;
 					break;
+
 				case TypeAttributes.NestedPrivate:
 					overlay = AccessOverlayIcon.Private;
 					break;
+
 				default:
 					throw new NotSupportedException();
 			}

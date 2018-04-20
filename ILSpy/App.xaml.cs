@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -27,10 +27,8 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Windows.Threading;
-
-using ICSharpCode.ILSpy.TextView;
 using ICSharpCode.ILSpy.Options;
-
+using ICSharpCode.ILSpy.TextView;
 using Microsoft.VisualStudio.Composition;
 
 namespace ICSharpCode.ILSpy
@@ -40,25 +38,24 @@ namespace ICSharpCode.ILSpy
 	/// </summary>
 	public partial class App : Application
 	{
-		
 		internal static CommandLineArguments CommandLineArguments;
 
-		static ExportProvider exportProvider;
-		
+		private static ExportProvider exportProvider;
+
 		public static ExportProvider ExportProvider => exportProvider;
 
-		static IExportProviderFactory exportProviderFactory;
-		
+		private static IExportProviderFactory exportProviderFactory;
+
 		public static IExportProviderFactory ExportProviderFactory => exportProviderFactory;
-		
+
 		internal static readonly IList<ExceptionData> StartupExceptions = new List<ExceptionData>();
-		
+
 		internal class ExceptionData
 		{
 			public Exception Exception;
 			public string PluginName;
 		}
-		
+
 		public App()
 		{
 			var cmdArgs = Environment.GetCommandLineArgs().Skip(1);
@@ -71,7 +68,7 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 			InitializeComponent();
-			
+
 			// Cannot show MessageBox here, because WPF would crash with a XamlParseException
 			// Remember and show exceptions in text output, once MainWindow is properly initialized
 			try {
@@ -107,11 +104,10 @@ namespace ICSharpCode.ILSpy
 				// This throws exceptions for composition failures. Alternatively, the configuration's CompositionErrors property
 				// could be used to log the errors directly. Used at the end so that it does not prevent the export provider setup.
 				config.ThrowOnErrors();
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				StartupExceptions.Add(new ExceptionData { Exception = ex });
 			}
-			
+
 			if (!System.Diagnostics.Debugger.IsAttached) {
 				AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
 				Dispatcher.CurrentDispatcher.UnhandledException += Dispatcher_UnhandledException;
@@ -120,12 +116,12 @@ namespace ICSharpCode.ILSpy
 			Languages.Initialize(exportProvider);
 
 			EventManager.RegisterClassHandler(typeof(Window),
-			                                  Hyperlink.RequestNavigateEvent,
-			                                  new RequestNavigateEventHandler(Window_RequestNavigate));
+											  Hyperlink.RequestNavigateEvent,
+											  new RequestNavigateEventHandler(Window_RequestNavigate));
 			ILSpyTraceListener.Install();
 		}
-		
-		string FullyQualifyPath(string argument)
+
+		private string FullyQualifyPath(string argument)
 		{
 			// Fully qualify the paths before passing them to another process,
 			// because that process might use a different current directory.
@@ -138,20 +134,21 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		void DotNet40_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+		private void DotNet40_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
 		{
 			// On .NET 4.0, an unobserved exception in a task terminates the process unless we mark it as observed
 			e.SetObserved();
 		}
-		
+
 		#region Exception Handling
-		static void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+
+		private static void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
 		{
 			UnhandledException(e.Exception);
 			e.Handled = true;
 		}
-		
-		static void ShowErrorBox(object sender, UnhandledExceptionEventArgs e)
+
+		private static void ShowErrorBox(object sender, UnhandledExceptionEventArgs e)
 		{
 			Exception ex = e.ExceptionObject as Exception;
 			if (ex != null) {
@@ -159,7 +156,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		static void UnhandledException(Exception exception)
+		private static void UnhandledException(Exception exception)
 		{
 			Debug.WriteLine(exception.ToString());
 			for (Exception ex = exception; ex != null; ex = ex.InnerException) {
@@ -172,10 +169,12 @@ namespace ICSharpCode.ILSpy
 			}
 			MessageBox.Show(exception.ToString(), "Sorry, we crashed");
 		}
-		#endregion
+
+		#endregion Exception Handling
 
 		#region Pass Command Line Arguments to previous instance
-		bool SendToPreviousInstance(string message, bool activate)
+
+		private bool SendToPreviousInstance(string message, bool activate)
 		{
 			bool success = false;
 			NativeMethods.EnumWindows(
@@ -196,31 +195,31 @@ namespace ICSharpCode.ILSpy
 				}, IntPtr.Zero);
 			return success;
 		}
-		
-		unsafe static IntPtr Send(IntPtr hWnd, string message)
+
+		private static unsafe IntPtr Send(IntPtr hWnd, string message)
 		{
 			const uint SMTO_NORMAL = 0;
-			
+
 			CopyDataStruct lParam;
 			lParam.Padding = IntPtr.Zero;
 			lParam.Size = message.Length * 2;
-			fixed (char *buffer = message) {
+			fixed (char* buffer = message) {
 				lParam.Buffer = (IntPtr)buffer;
 				IntPtr result;
 				// SendMessage with 3s timeout (e.g. when the target process is stopped in the debugger)
 				if (NativeMethods.SendMessageTimeout(
 					hWnd, NativeMethods.WM_COPYDATA, IntPtr.Zero, ref lParam,
-					SMTO_NORMAL, 3000, out result) != IntPtr.Zero)
-				{
+					SMTO_NORMAL, 3000, out result) != IntPtr.Zero) {
 					return result;
 				} else {
 					return IntPtr.Zero;
 				}
 			}
 		}
-		#endregion
-		
-		void Window_RequestNavigate(object sender, RequestNavigateEventArgs e)
+
+		#endregion Pass Command Line Arguments to previous instance
+
+		private void Window_RequestNavigate(object sender, RequestNavigateEventArgs e)
 		{
 			if (e.Uri.Scheme == "resource") {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();

@@ -1,14 +1,14 @@
 // Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -28,7 +28,7 @@ using ICSharpCode.ILSpy.TextView;
 namespace ICSharpCode.ILSpy
 {
 	[ExportMainMenuCommand(Menu = "_File", Header = "DEBUG -- Decompile All", MenuCategory = "Open", MenuOrder = 2.5)]
-	sealed class DecompileAllCommand : SimpleCommand
+	internal sealed class DecompileAllCommand : SimpleCommand
 	{
 		public override bool CanExecute(object parameter)
 		{
@@ -39,15 +39,14 @@ namespace ICSharpCode.ILSpy
 		{
 			MainWindow.Instance.TextView.RunWithCancellation(ct => Task<AvalonEditTextOutput>.Factory.StartNew(() => {
 				AvalonEditTextOutput output = new AvalonEditTextOutput();
-				Parallel.ForEach(MainWindow.Instance.CurrentAssemblyList.GetAssemblies(), new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = ct }, delegate(LoadedAssembly asm) {
+				Parallel.ForEach(MainWindow.Instance.CurrentAssemblyList.GetAssemblies(), new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = ct }, delegate (LoadedAssembly asm) {
 					if (!asm.HasLoadError) {
 						Stopwatch w = Stopwatch.StartNew();
 						Exception exception = null;
 						using (var writer = new System.IO.StreamWriter("c:\\temp\\decompiled\\" + asm.ShortName + ".cs")) {
 							try {
 								new CSharpLanguage().DecompileAssembly(asm, new Decompiler.PlainTextOutput(writer), new DecompilationOptions() { FullDecompilation = true, CancellationToken = ct });
-							}
-							catch (Exception ex) {
+							} catch (Exception ex) {
 								writer.WriteLine(ex.ToString());
 								exception = ex;
 							}
@@ -68,7 +67,7 @@ namespace ICSharpCode.ILSpy
 	}
 
 	[ExportMainMenuCommand(Menu = "_File", Header = "DEBUG -- Decompile 100x", MenuCategory = "Open", MenuOrder = 2.6)]
-	sealed class Decompile100TimesCommand : SimpleCommand
+	internal sealed class Decompile100TimesCommand : SimpleCommand
 	{
 		public override void Execute(object parameter)
 		{

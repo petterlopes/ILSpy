@@ -14,15 +14,12 @@ namespace Ricciolo.StylesExplorer.MarkupReflection
 			_text = text;
 		}
 
-		public string Text
-		{
+		public string Text {
 			get { return _text; }
 		}
 
-		public override System.Xml.XmlNodeType NodeType
-		{
-			get
-			{
+		public override System.Xml.XmlNodeType NodeType {
+			get {
 				return XmlNodeType.Text;
 			}
 		}

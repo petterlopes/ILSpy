@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -36,20 +36,20 @@ namespace ICSharpCode.ILSpy
 		public SessionSettings(ILSpySettings spySettings)
 		{
 			XElement doc = spySettings["SessionSettings"];
-			
+
 			XElement filterSettings = doc.Element("FilterSettings");
 			if (filterSettings == null) filterSettings = new XElement("FilterSettings");
-			
+
 			this.FilterSettings = new FilterSettings(filterSettings);
-			
+
 			this.ActiveAssemblyList = (string)doc.Element("ActiveAssemblyList");
-			
+
 			XElement activeTreeViewPath = doc.Element("ActiveTreeViewPath");
 			if (activeTreeViewPath != null) {
 				this.ActiveTreeViewPath = activeTreeViewPath.Elements().Select(e => Unescape((string)e)).ToArray();
 			}
 			this.ActiveAutoLoadedAssembly = (string)doc.Element("ActiveAutoLoadedAssembly");
-			
+
 			this.WindowState = FromString((string)doc.Element("WindowState"), WindowState.Normal);
 			this.WindowBounds = FromString((string)doc.Element("WindowBounds"), DefaultWindowBounds);
 			this.SplitterPosition = FromString((string)doc.Element("SplitterPosition"), 0.4);
@@ -57,32 +57,34 @@ namespace ICSharpCode.ILSpy
 			this.BottomPaneSplitterPosition = FromString((string)doc.Element("BottomPaneSplitterPosition"), 0.3);
 			this.SelectedSearchMode = FromString((string)doc.Element("SelectedSearchMode"), SearchMode.TypeAndMember);
 		}
-		
+
 		public event PropertyChangedEventHandler PropertyChanged;
-		
-		void OnPropertyChanged(string propertyName)
+
+		private void OnPropertyChanged(string propertyName)
 		{
 			if (PropertyChanged != null)
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 		}
-		
+
 		public FilterSettings FilterSettings { get; private set; }
 		public SearchMode SelectedSearchMode { get; set; }
-		
+
 		public string[] ActiveTreeViewPath;
 		public string ActiveAutoLoadedAssembly;
-		
+
 		public string ActiveAssemblyList;
-		
+
 		public WindowState WindowState = WindowState.Normal;
 		public Rect WindowBounds;
-		internal static Rect DefaultWindowBounds =  new Rect(10, 10, 750, 550);
+		internal static Rect DefaultWindowBounds = new Rect(10, 10, 750, 550);
+
 		/// <summary>
 		/// position of the left/right splitter
 		/// </summary>
 		public double SplitterPosition;
+
 		public double TopPaneSplitterPosition, BottomPaneSplitterPosition;
-		
+
 		public void Save()
 		{
 			XElement doc = new XElement("SessionSettings");
@@ -102,13 +104,13 @@ namespace ICSharpCode.ILSpy
 			doc.Add(new XElement("TopPaneSplitterPosition", ToString(this.TopPaneSplitterPosition)));
 			doc.Add(new XElement("BottomPaneSplitterPosition", ToString(this.BottomPaneSplitterPosition)));
 			doc.Add(new XElement("SelectedSearchMode", ToString(this.SelectedSearchMode)));
-			
+
 			ILSpySettings.SaveSettings(doc);
 		}
-		
-		static Regex regex = new Regex("\\\\x(?<num>[0-9A-f]{4})");
-		
-		static string Escape(string p)
+
+		private static Regex regex = new Regex("\\\\x(?<num>[0-9A-f]{4})");
+
+		private static string Escape(string p)
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (char ch in p) {
@@ -119,13 +121,13 @@ namespace ICSharpCode.ILSpy
 			}
 			return sb.ToString();
 		}
-		
-		static string Unescape(string p)
+
+		private static string Unescape(string p)
 		{
 			return regex.Replace(p, m => ((char)int.Parse(m.Groups["num"].Value, NumberStyles.HexNumber)).ToString());
 		}
-		
-		static T FromString<T>(string s, T defaultValue)
+
+		private static T FromString<T>(string s, T defaultValue)
 		{
 			if (s == null)
 				return defaultValue;
@@ -136,8 +138,8 @@ namespace ICSharpCode.ILSpy
 				return defaultValue;
 			}
 		}
-		
-		static string ToString<T>(T obj)
+
+		private static string ToString<T>(T obj)
 		{
 			TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
 			return c.ConvertToInvariantString(obj);

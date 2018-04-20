@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -37,11 +37,11 @@ namespace ICSharpCode.ILSpy.Options
 		public DisplaySettingsPanel()
 		{
 			InitializeComponent();
-			
+
 			Task<FontFamily[]> task = new Task<FontFamily[]>(FontLoader);
 			task.Start();
 			task.ContinueWith(
-				delegate(Task continuation) {
+				delegate (Task continuation) {
 					App.Current.Dispatcher.Invoke(
 						DispatcherPriority.Normal,
 						(Action)(
@@ -57,21 +57,21 @@ namespace ICSharpCode.ILSpy.Options
 				}
 			);
 		}
-		
+
 		public void Load(ILSpySettings settings)
 		{
 			this.DataContext = LoadDisplaySettings(settings);
 		}
-		
-		static DisplaySettings currentDisplaySettings;
-		
+
+		private static DisplaySettings currentDisplaySettings;
+
 		public static DisplaySettings CurrentDisplaySettings {
 			get {
 				return currentDisplaySettings ?? (currentDisplaySettings = LoadDisplaySettings(ILSpySettings.Load()));
 			}
 		}
-		
-		static bool IsSymbolFont(FontFamily fontFamily)
+
+		private static bool IsSymbolFont(FontFamily fontFamily)
 		{
 			foreach (var tf in fontFamily.GetTypefaces()) {
 				GlyphTypeface glyph;
@@ -84,15 +84,15 @@ namespace ICSharpCode.ILSpy.Options
 			}
 			return false;
 		}
-		
-		static FontFamily[] FontLoader()
+
+		private static FontFamily[] FontLoader()
 		{
 			return (from ff in Fonts.SystemFontFamilies
 					where !IsSymbolFont(ff)
 					orderby ff.Source
 					select ff).ToArray();
 		}
-		
+
 		public static DisplaySettings LoadDisplaySettings(ILSpySettings settings)
 		{
 			XElement e = settings["DisplaySettings"];
@@ -100,17 +100,17 @@ namespace ICSharpCode.ILSpy.Options
 			s.SelectedFont = new FontFamily((string)e.Attribute("Font") ?? "Consolas");
 			s.SelectedFontSize = (double?)e.Attribute("FontSize") ?? 10.0 * 4 / 3;
 			s.ShowLineNumbers = (bool?)e.Attribute("ShowLineNumbers") ?? false;
-			s.ShowMetadataTokens = (bool?) e.Attribute("ShowMetadataTokens") ?? false;
-		    s.EnableWordWrap = (bool?)e.Attribute("EnableWordWrap") ?? false;
+			s.ShowMetadataTokens = (bool?)e.Attribute("ShowMetadataTokens") ?? false;
+			s.EnableWordWrap = (bool?)e.Attribute("EnableWordWrap") ?? false;
 			s.SortResults = (bool?)e.Attribute("SortResults") ?? true;
 
 			return s;
 		}
-		
+
 		public void Save(XElement root)
 		{
 			var s = (DisplaySettings)this.DataContext;
-			
+
 			var section = new XElement("DisplaySettings");
 			section.SetAttributeValue("Font", s.SelectedFont.Source);
 			section.SetAttributeValue("FontSize", s.SelectedFontSize);
@@ -129,7 +129,7 @@ namespace ICSharpCode.ILSpy.Options
 				currentDisplaySettings.CopyValues(s);
 		}
 	}
-	
+
 	public class FontSizeConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -137,10 +137,10 @@ namespace ICSharpCode.ILSpy.Options
 			if (value is double) {
 				return Math.Round((double)value / 4 * 3);
 			}
-			
+
 			throw new NotImplementedException();
 		}
-		
+
 		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 		{
 			if (value is string) {
@@ -149,7 +149,7 @@ namespace ICSharpCode.ILSpy.Options
 					return d * 4 / 3;
 				return 11 * 4 / 3;
 			}
-			
+
 			throw new NotImplementedException();
 		}
 	}

@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -74,18 +74,23 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 				default:
 					memberAccessibility = Accessibility.Private;
 					break;
+
 				case FieldAttributes.FamANDAssem:
 					memberAccessibility = Accessibility.FamilyAndInternal;
 					break;
+
 				case FieldAttributes.Assembly:
 					memberAccessibility = Accessibility.Internal;
 					break;
+
 				case FieldAttributes.Family:
 					memberAccessibility = Accessibility.Family;
 					break;
+
 				case FieldAttributes.FamORAssem:
 					memberAccessibility = Accessibility.FamilyOrInternal;
 					break;
+
 				case FieldAttributes.Public:
 					memberAccessibility = Accessibility.Public;
 					break;
@@ -100,18 +105,23 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 				default:
 					accessibility = Accessibility.Private;
 					break;
+
 				case MethodAttributes.FamANDAssem:
 					accessibility = Accessibility.FamilyAndInternal;
 					break;
+
 				case MethodAttributes.Family:
 					accessibility = Accessibility.Family;
 					break;
+
 				case MethodAttributes.Assembly:
 					accessibility = Accessibility.Internal;
 					break;
+
 				case MethodAttributes.FamORAssem:
 					accessibility = Accessibility.FamilyOrInternal;
 					break;
+
 				case MethodAttributes.Public:
 					accessibility = Accessibility.Public;
 					break;
@@ -139,7 +149,7 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 
 			return FindReferencesGlobal(ct);
 		}
-		
+
 		private void DetermineTypeAccessibility()
 		{
 			while (typeScope.IsNested) {
@@ -165,21 +175,27 @@ namespace ICSharpCode.ILSpy.TreeNodes.Analyzer
 				case TypeAttributes.NestedPublic:
 					result = Accessibility.Public;
 					break;
+
 				case TypeAttributes.NestedPrivate:
 					result = Accessibility.Private;
 					break;
+
 				case TypeAttributes.NestedFamily:
 					result = Accessibility.Family;
 					break;
+
 				case TypeAttributes.NestedAssembly:
 					result = Accessibility.Internal;
 					break;
+
 				case TypeAttributes.NestedFamANDAssem:
 					result = Accessibility.FamilyAndInternal;
 					break;
+
 				case TypeAttributes.NestedFamORAssem:
 					result = Accessibility.FamilyOrInternal;
 					break;
+
 				default:
 					throw new InvalidOperationException();
 			}

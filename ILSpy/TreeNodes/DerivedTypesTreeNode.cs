@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -28,11 +28,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 	/// <summary>
 	/// Lists the super types of a class.
 	/// </summary>
-	sealed class DerivedTypesTreeNode : ILSpyTreeNode
+	internal sealed class DerivedTypesTreeNode : ILSpyTreeNode
 	{
-		readonly AssemblyList list;
-		readonly TypeDefinition type;
-		readonly ThreadingSupport threading;
+		private readonly AssemblyList list;
+		private readonly TypeDefinition type;
+		private readonly ThreadingSupport threading;
 
 		public DerivedTypesTreeNode(AssemblyList list, TypeDefinition type)
 		{
@@ -42,13 +42,11 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			this.threading = new ThreadingSupport();
 		}
 
-		public override object Text
-		{
+		public override object Text {
 			get { return "Derived Types"; }
 		}
 
-		public override object Icon
-		{
+		public override object Icon {
 			get { return Images.SubTypes; }
 		}
 
@@ -57,7 +55,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			threading.LoadChildren(this, FetchChildren);
 		}
 
-		IEnumerable<ILSpyTreeNode> FetchChildren(CancellationToken cancellationToken)
+		private IEnumerable<ILSpyTreeNode> FetchChildren(CancellationToken cancellationToken)
 		{
 			// FetchChildren() runs on the main thread; but the enumerator will be consumed on a background thread
 			var assemblies = list.GetAssemblies().Select(node => node.GetModuleDefinitionOrNull()).Where(asm => asm != null).ToArray();
@@ -81,7 +79,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			}
 		}
 
-		static bool IsSameType(TypeReference typeRef, TypeDefinition type)
+		private static bool IsSameType(TypeReference typeRef, TypeDefinition type)
 		{
 			if (typeRef.FullName == type.FullName)
 				return true;

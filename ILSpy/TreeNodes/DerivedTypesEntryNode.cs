@@ -1,14 +1,14 @@
 // Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -23,7 +23,7 @@ using Mono.Cecil;
 
 namespace ICSharpCode.ILSpy.TreeNodes
 {
-	class DerivedTypesEntryNode : ILSpyTreeNode, IMemberTreeNode
+	internal class DerivedTypesEntryNode : ILSpyTreeNode, IMemberTreeNode
 	{
 		private readonly TypeDefinition type;
 		private readonly ModuleDefinition[] assemblies;
@@ -37,18 +37,15 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			threading = new ThreadingSupport();
 		}
 
-		public override bool ShowExpander
-		{
+		public override bool ShowExpander {
 			get { return !type.IsSealed && base.ShowExpander; }
 		}
 
-		public override object Text
-		{
+		public override object Text {
 			get { return this.Language.TypeToString(type, true) + type.MetadataToken.ToSuffixString(); }
 		}
 
-		public override object Icon
-		{
+		public override object Icon {
 			get { return TypeTreeNode.GetIcon(type); }
 		}
 
@@ -64,7 +61,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			} else
 				return FilterResult.Recurse;
 		}
-		
+
 		public override bool IsPublicAPI {
 			get {
 				switch (type.Attributes & TypeAttributes.VisibilityMask) {
@@ -73,6 +70,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 					case TypeAttributes.NestedFamily:
 					case TypeAttributes.NestedFamORAssem:
 						return true;
+
 					default:
 						return false;
 				}
@@ -84,7 +82,7 @@ namespace ICSharpCode.ILSpy.TreeNodes
 			threading.LoadChildren(this, FetchChildren);
 		}
 
-		IEnumerable<ILSpyTreeNode> FetchChildren(CancellationToken ct)
+		private IEnumerable<ILSpyTreeNode> FetchChildren(CancellationToken ct)
 		{
 			// FetchChildren() runs on the main thread; but the enumerator will be consumed on a background thread
 			return DerivedTypesTreeNode.FindDerivedTypes(type, assemblies, ct);

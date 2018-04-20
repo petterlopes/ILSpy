@@ -11,8 +11,8 @@ namespace ICSharpCode.ILSpy
 {
 	public class LATextReader : TextReader
 	{
-		List<int> buffer;
-		TextReader reader;
+		private List<int> buffer;
+		private TextReader reader;
 
 		public LATextReader(TextReader reader)
 		{
@@ -93,9 +93,9 @@ namespace ICSharpCode.ILSpy
 
 	internal abstract class AbstractLexer
 	{
-		LATextReader reader;
-		int col = 1;
-		int line = 1;
+		private LATextReader reader;
+		private int col = 1;
+		private int line = 1;
 
 		protected Literal lastToken = null;
 		protected Literal curToken = null;
@@ -105,12 +105,13 @@ namespace ICSharpCode.ILSpy
 
 		// used for the original value of strings (with escape sequences).
 		protected StringBuilder originalValue = new StringBuilder();
-		
+
 		protected int Line {
 			get {
 				return line;
 			}
 		}
+
 		protected int Col {
 			get {
 				return col;
@@ -192,6 +193,7 @@ namespace ICSharpCode.ILSpy
 		}
 
 		#region System.IDisposable interface implementation
+
 		public virtual void Dispose()
 		{
 			reader.Close();
@@ -199,7 +201,8 @@ namespace ICSharpCode.ILSpy
 			lastToken = curToken = peekToken = null;
 			sb = originalValue = null;
 		}
-		#endregion
+
+		#endregion System.IDisposable interface implementation
 
 		/// <summary>
 		/// Must be called before a peek operation.
@@ -273,9 +276,11 @@ namespace ICSharpCode.ILSpy
 			}
 			return 0;
 		}
+
 		protected void LineBreak()
 		{
 		}
+
 		protected bool HandleLineEnd(char ch)
 		{
 			// Handle MS-DOS or MacOS line ends.
@@ -368,9 +373,11 @@ namespace ICSharpCode.ILSpy
 					case '"':
 						token = ReadString();
 						break;
+
 					case '\'':
 						token = ReadChar();
 						break;
+
 					case '@':
 						int next = ReaderRead();
 						if (next == -1) {
@@ -393,6 +400,7 @@ namespace ICSharpCode.ILSpy
 							}
 						}
 						break;
+
 					default: // non-ws chars are handled here
 						ch = (char)nextChar;
 						if (Char.IsLetter(ch) || ch == '_' || ch == '\\') {
@@ -418,10 +426,11 @@ namespace ICSharpCode.ILSpy
 
 		// The C# compiler has a fixed size length therefore we'll use a fixed size char array for identifiers
 		// it's also faster than using a string builder.
-		const int MAX_IDENTIFIER_LENGTH = 512;
-		char[] identBuffer = new char[MAX_IDENTIFIER_LENGTH];
+		private const int MAX_IDENTIFIER_LENGTH = 512;
 
-		string ReadIdent(char ch, out bool canBeKeyword)
+		private char[] identBuffer = new char[MAX_IDENTIFIER_LENGTH];
+
+		private string ReadIdent(char ch, out bool canBeKeyword)
 		{
 			int peek;
 			int curPos = 0;
@@ -473,7 +482,7 @@ namespace ICSharpCode.ILSpy
 			return new String(identBuffer, 0, curPos);
 		}
 
-		Literal ReadDigit(char ch, int x)
+		private Literal ReadDigit(char ch, int x)
 		{
 			unchecked { // prevent exception when ReaderPeek() = -1 is cast to char
 				int y = Line;
@@ -686,7 +695,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		Literal ReadString()
+		private Literal ReadString()
 		{
 			int x = Col - 1;
 			int y = Line;
@@ -731,7 +740,7 @@ namespace ICSharpCode.ILSpy
 			return new Literal(originalValue.ToString(), sb.ToString(), LiteralFormat.StringLiteral);
 		}
 
-		Literal ReadVerbatimString()
+		private Literal ReadVerbatimString()
 		{
 			sb.Length = 0;
 			originalValue.Length = 0;
@@ -764,7 +773,7 @@ namespace ICSharpCode.ILSpy
 			return new Literal(originalValue.ToString(), sb.ToString(), LiteralFormat.VerbatimStringLiteral);
 		}
 
-		readonly char[] escapeSequenceBuffer = new char[12];
+		private readonly char[] escapeSequenceBuffer = new char[12];
 
 		/// <summary>
 		/// reads an escape sequence
@@ -776,7 +785,7 @@ namespace ICSharpCode.ILSpy
 		/// by the escape sequence can only be represented by a surrogate pair (then the string
 		/// contains the surrogate pair)</param>
 		/// <returns>The escape sequence</returns>
-		string ReadEscapeSequence(out char ch, out string surrogatePair)
+		private string ReadEscapeSequence(out char ch, out string surrogatePair)
 		{
 			surrogatePair = null;
 
@@ -794,36 +803,47 @@ namespace ICSharpCode.ILSpy
 				case '\'':
 					ch = '\'';
 					break;
+
 				case '\"':
 					ch = '\"';
 					break;
+
 				case '\\':
 					ch = '\\';
 					break;
+
 				case '0':
 					ch = '\0';
 					break;
+
 				case 'a':
 					ch = '\a';
 					break;
+
 				case 'b':
 					ch = '\b';
 					break;
+
 				case 'f':
 					ch = '\f';
 					break;
+
 				case 'n':
 					ch = '\n';
 					break;
+
 				case 'r':
 					ch = '\r';
 					break;
+
 				case 't':
 					ch = '\t';
 					break;
+
 				case 'v':
 					ch = '\v';
 					break;
+
 				case 'u':
 				case 'x':
 					// 16 bit unicode character
@@ -846,6 +866,7 @@ namespace ICSharpCode.ILSpy
 					}
 					ch = (char)number;
 					break;
+
 				case 'U':
 					// 32 bit unicode character
 					number = 0;
@@ -867,6 +888,7 @@ namespace ICSharpCode.ILSpy
 						ch = (char)number;
 					}
 					break;
+
 				default:
 					Error(Line, Col, String.Format("Unexpected escape sequence : {0}", c));
 					ch = '\0';
@@ -875,7 +897,7 @@ namespace ICSharpCode.ILSpy
 			return new String(escapeSequenceBuffer, 0, curPos);
 		}
 
-		Literal ReadChar()
+		private Literal ReadChar()
 		{
 			int x = Col - 1;
 			int y = Line;
@@ -902,7 +924,7 @@ namespace ICSharpCode.ILSpy
 			return new Literal("'" + ch + escapeSequence + "'", chValue, LiteralFormat.CharLiteral);
 		}
 
-		void Error(int y, int x, string message)
+		private void Error(int y, int x, string message)
 		{
 		}
 	}

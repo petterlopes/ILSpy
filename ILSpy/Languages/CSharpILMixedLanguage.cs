@@ -4,8 +4,6 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.Decompiler;
@@ -13,7 +11,6 @@ using ICSharpCode.Decompiler.CSharp;
 using ICSharpCode.Decompiler.CSharp.OutputVisitor;
 using ICSharpCode.Decompiler.CSharp.Syntax;
 using ICSharpCode.Decompiler.Disassembler;
-using ICSharpCode.Decompiler.IL;
 using ICSharpCode.Decompiler.TypeSystem;
 using ICSharpCode.Decompiler.Util;
 using Mono.Cecil;
@@ -22,13 +19,13 @@ using Mono.Cecil.Cil;
 namespace ICSharpCode.ILSpy
 {
 	[Export(typeof(Language))]
-	class CSharpILMixedLanguage : ILLanguage
+	internal class CSharpILMixedLanguage : ILLanguage
 	{
 		public override string Name => "IL with C#";
 
 		protected override ReflectionDisassembler CreateDisassembler(ITextOutput output, DecompilationOptions options)
 		{
-			return new ReflectionDisassembler(output, 
+			return new ReflectionDisassembler(output,
 				new MixedMethodBodyDisassembler(output, options) {
 					DetectControlStructure = detectControlStructure,
 					ShowSequencePoints = options.DecompilerSettings.ShowDebugInfo
@@ -36,28 +33,30 @@ namespace ICSharpCode.ILSpy
 				options.CancellationToken);
 		}
 
-		static CSharpDecompiler CreateDecompiler(ModuleDefinition module, DecompilationOptions options)
+		private static CSharpDecompiler CreateDecompiler(ModuleDefinition module, DecompilationOptions options)
 		{
 			CSharpDecompiler decompiler = new CSharpDecompiler(module, options.DecompilerSettings);
 			decompiler.CancellationToken = options.CancellationToken;
 			return decompiler;
 		}
 
-		static void WriteCode(TextWriter output, DecompilerSettings settings, SyntaxTree syntaxTree, IDecompilerTypeSystem typeSystem)
+		private static void WriteCode(TextWriter output, DecompilerSettings settings, SyntaxTree syntaxTree, IDecompilerTypeSystem typeSystem)
 		{
 			syntaxTree.AcceptVisitor(new InsertParenthesesVisitor { InsertParenthesesForReadability = true });
 			TokenWriter tokenWriter = new TextWriterTokenWriter(output);
 			tokenWriter = TokenWriter.WrapInWriterThatSetsLocationsInAST(tokenWriter);
 			syntaxTree.AcceptVisitor(new CSharpOutputVisitor(tokenWriter, settings.CSharpFormattingOptions));
 		}
-		
-		class MixedMethodBodyDisassembler : MethodBodyDisassembler
+
+		private class MixedMethodBodyDisassembler : MethodBodyDisassembler
 		{
-			readonly DecompilationOptions options;
+			private readonly DecompilationOptions options;
+
 			// list sorted by IL offset
-			IList<Decompiler.IL.SequencePoint> sequencePoints;
+			private IList<Decompiler.IL.SequencePoint> sequencePoints;
+
 			// lines of raw c# source code
-			string[] codeLines;
+			private string[] codeLines;
 
 			public MixedMethodBodyDisassembler(ITextOutput output, DecompilationOptions options)
 				: base(output, options.CancellationToken)
@@ -113,9 +112,9 @@ namespace ICSharpCode.ILSpy
 				base.WriteInstruction(output, instruction);
 			}
 
-			HighlightingColor gray = new HighlightingColor { Foreground = new SimpleHighlightingBrush(Colors.DarkGray) };
+			private HighlightingColor gray = new HighlightingColor { Foreground = new SimpleHighlightingBrush(Colors.DarkGray) };
 
-			void WriteHighlightedCommentLine(ISmartTextOutput output, string text, int startColumn, int endColumn, bool isSingleLine)
+			private void WriteHighlightedCommentLine(ISmartTextOutput output, string text, int startColumn, int endColumn, bool isSingleLine)
 			{
 				if (startColumn > text.Length) {
 					Debug.Fail("startColumn is invalid");
@@ -139,7 +138,7 @@ namespace ICSharpCode.ILSpy
 				output.WriteLine();
 			}
 
-			void WriteCommentLine(ITextOutput output, string text)
+			private void WriteCommentLine(ITextOutput output, string text)
 			{
 				output.WriteLine("// " + text);
 			}

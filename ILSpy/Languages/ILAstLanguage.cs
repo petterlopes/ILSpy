@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 using ICSharpCode.Decompiler;
@@ -32,10 +31,11 @@ using Mono.Cecil;
 namespace ICSharpCode.ILSpy
 {
 #if DEBUG
+
 	/// <summary>
 	/// Represents the ILAst "language" used for debugging purposes.
 	/// </summary>
-	abstract class ILAstLanguage : Language
+	internal abstract class ILAstLanguage : Language
 	{
 		public event EventHandler StepperUpdated;
 
@@ -46,13 +46,13 @@ namespace ICSharpCode.ILSpy
 
 		public Stepper Stepper { get; set; } = new Stepper();
 
-		readonly string name;
-		
+		private readonly string name;
+
 		protected ILAstLanguage(string name)
 		{
 			this.name = name;
 		}
-		
+
 		public override string Name { get { return name; } }
 
 		internal static IEnumerable<ILAstLanguage> GetDebugLanguages()
@@ -61,7 +61,7 @@ namespace ICSharpCode.ILSpy
 			CSharpDecompiler decompiler = new CSharpDecompiler(ModuleDefinition.CreateModule("Dummy", ModuleKind.Dll), new DecompilerSettings());
 			yield return new BlockIL(decompiler.ILTransforms.ToList());
 		}
-		
+
 		public override string FileExtension {
 			get {
 				return ".il";
@@ -83,10 +83,12 @@ namespace ICSharpCode.ILSpy
 			output.WriteLine();
 		}
 
-		class TypedIL : ILAstLanguage
+		private class TypedIL : ILAstLanguage
 		{
-			public TypedIL() : base("Typed IL") {}
-			
+			public TypedIL() : base("Typed IL")
+			{
+			}
+
 			public override void DecompileMethod(MethodDefinition method, ITextOutput output, DecompilationOptions options)
 			{
 				base.DecompileMethod(method, output, options);
@@ -98,9 +100,9 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		class BlockIL : ILAstLanguage
+		private class BlockIL : ILAstLanguage
 		{
-			readonly IReadOnlyList<IILTransform> transforms;
+			private readonly IReadOnlyList<IILTransform> transforms;
 
 			public BlockIL(IReadOnlyList<IILTransform> transforms) : base("ILAst")
 			{
@@ -144,5 +146,6 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 	}
-	#endif
+
+#endif
 }

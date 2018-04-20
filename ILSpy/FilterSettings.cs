@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -42,7 +42,7 @@ namespace ICSharpCode.ILSpy
 			if (this.LanguageVersion == default(LanguageVersion))
 				this.LanguageVersion = language.LanguageVersions.LastOrDefault();
 		}
-		
+
 		public XElement SaveAsXml()
 		{
 			return new XElement(
@@ -52,9 +52,9 @@ namespace ICSharpCode.ILSpy
 				new XElement("LanguageVersion", this.LanguageVersion.Version)
 			);
 		}
-		
-		string searchTerm;
-		
+
+		private string searchTerm;
+
 		/// <summary>
 		/// Gets/Sets the search term.
 		/// Only tree nodes containing the search term will be shown.
@@ -68,7 +68,7 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Gets whether a node with the specified text is matched by the current search term.
 		/// </summary>
@@ -78,9 +78,9 @@ namespace ICSharpCode.ILSpy
 				return true;
 			return text.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
-		
-		bool showInternalApi;
-		
+
+		private bool showInternalApi;
+
 		/// <summary>
 		/// Gets/Sets whether internal API members should be shown.
 		/// </summary>
@@ -93,9 +93,9 @@ namespace ICSharpCode.ILSpy
 				}
 			}
 		}
-		
-		Language language;
-		
+
+		private Language language;
+
 		/// <summary>
 		/// Gets/Sets the current language.
 		/// </summary>
@@ -114,7 +114,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		LanguageVersion languageVersion;
+		private LanguageVersion languageVersion;
 
 		/// <summary>
 		/// Gets/Sets the current language version.
@@ -134,14 +134,14 @@ namespace ICSharpCode.ILSpy
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
-		
+
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
 			if (PropertyChanged != null) {
 				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
-		
+
 		public FilterSettings Clone()
 		{
 			FilterSettings f = (FilterSettings)MemberwiseClone();

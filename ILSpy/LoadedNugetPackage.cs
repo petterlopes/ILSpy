@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2011 AlphaSierraPapa for the SharpDevelop Team
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this
 // software and associated documentation files (the "Software"), to deal in the Software
 // without restriction, including without limitation the rights to use, copy, modify, merge,
 // publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 // to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or
 // substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 // INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 // PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
@@ -18,12 +18,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO.Compression;
-using System.IO;
 using System.ComponentModel;
+using System.IO;
+using System.IO.Compression;
 using System.Runtime.CompilerServices;
 
 namespace ICSharpCode.ILSpy
@@ -52,7 +49,7 @@ namespace ICSharpCode.ILSpy
 			}
 		}
 
-		void EntryPropertyChanged(object sender, PropertyChangedEventArgs e)
+		private void EntryPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(Entry.IsSelected)) {
 				var entry = (Entry)sender;
@@ -103,7 +100,7 @@ namespace ICSharpCode.ILSpy
 
 		public Stream Stream { get; }
 
-		bool isSelected;
+		private bool isSelected;
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
